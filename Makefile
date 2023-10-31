@@ -9,11 +9,11 @@ build:
 	$(JAVAC) -d out *.java
 
 .PHONY: client
-run: 
+client: 
 	java -cp out Client
 
 .PHONY: server
-run: 
+server: 
 	java -cp out Server
 
 .PHONY: clean
