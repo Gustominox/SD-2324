@@ -21,6 +21,11 @@ class Client{
         System.out.println(socket.getPort());
     }
 
+    public void start() throws IOException{
+        
+    }
+
+
     public static void main(String[] args) throws IOException{
         
         Client c = new Client();
