@@ -33,6 +33,7 @@ public void loopMenu() {
 
   public void printMenu() {
     StringBuilder sb = new StringBuilder();
+    sb.append("---MENU---\n");
     sb.append("1 - Login\n");
     sb.append("2 - Login\n");
 
@@ -56,4 +57,6 @@ public void loopMenu() {
   public void printPrompt(int nivel) {
     this.print("Client > ");
   }
+
+  private static int getEscolha(){}
 }
