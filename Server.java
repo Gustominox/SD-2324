@@ -24,6 +24,14 @@ public class Server {
         System.out.println(recString);
     }
 
+    public void run() {
+        while (true) {
+            
+        }
+    }
+
+
+
     public static void main(String[] args) throws IOException {
         Server s = new Server();
     }
