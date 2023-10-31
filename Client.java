@@ -15,7 +15,9 @@ class Client{
         new OutputStreamWriter(socket.getOutputStream())
         );
         rw.write("Hello, world!\n");
+        rw.flush();
 
+        
         System.out.println(socket.getPort());
     }
 
