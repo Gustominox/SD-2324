@@ -50,6 +50,10 @@ public void loopMenu() {
   }
 
   public void print(String output) {
-    System.out.println(output);
+    System.out.print(output);
+  }
+
+  public void printPrompt(int nivel) {
+    this.print("Client > ");
   }
 }
