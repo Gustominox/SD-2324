@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+
 public class Server {
     
     private ServerSocket socket;
@@ -12,23 +13,52 @@ public class Server {
     public Server() throws IOException {
 
         socket = new ServerSocket(9090);
-        Socket clientSoc = socket.accept();
-        System.out.println("Accepted connection");
-        BufferedReader br = new BufferedReader(
-        new InputStreamReader(clientSoc.getInputStream())
-        );
+
+        while(true){
+            Socket clientSoc = socket.accept();
+            System.out.println("Accepted connection");
+
+            ClientHandler client = new ClientHandler(clientSoc);
+
+            new Thread(client).start();
+
+        }
+        
+        
+        
+    }
+
+
+    public static class ClientHandler implements Runnable {
+        private final Socket client;
+
+        //constructor
+        public ClientHandler (Socket socket){
+            this.client = socket;
+        }
+
+        public void run() {
+        
+            try{
+                BufferedReader br = new BufferedReader(
+                    new InputStreamReader(client.getInputStream())
+                    );
 
         // DataOutputStream dOutStream = new DataOutputStream(clientSoc.getOutputStream());
 
-        String recString = br.readLine();
-        System.out.println(recString);
+                String recString = br.readLine();
+                System.out.println(recString);
+
+            }catch (IOException e){}
+            finally{}
+            
+        
+        
     }
 
-    public void run() {
-        while (true) {
-            
-        }
+
     }
+    
 
 
 
