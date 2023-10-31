@@ -4,14 +4,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 
 public class Server {
 
   private ServerSocket socket;
+  private Map<String,String> user;
 
   public Server() throws IOException {
     socket = new ServerSocket(9090);
+    
 
+
+    
+  }
+  public void start() throws IOException{
     while (true) {
       Socket clientSoc = socket.accept();
       System.out.println("Accepted connection");
@@ -20,7 +27,7 @@ public class Server {
 
       new Thread(client).start();
     }
-  }
+    }
 
   public static class ClientHandler implements Runnable {
 
@@ -57,5 +64,9 @@ public class Server {
 
   public static void main(String[] args) throws IOException {
     Server s = new Server();
+    s.start();
   }
+
+
+
 }
