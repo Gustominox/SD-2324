@@ -1,2 +1,2 @@
 # SD-2324
-Projeto LI4 2023-2024
+Projeto SD 2023-2024
