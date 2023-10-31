@@ -25,7 +25,14 @@ class Client {
    *
    * @throws IOException
    */
-  public void login() throws IOException {}
+  public void login() throws IOException {
+
+    String username = i.readline();
+
+    this.send(username);
+
+
+  }
   
   /**
    * 
