@@ -8,9 +8,13 @@ CLASS_FILES = ./*.class
 build: 
 	$(JAVAC) -d out *.java
 
-.PHONY: run
+.PHONY: client
 run: 
-	java -cp out Programa
+	java -cp out Client
+
+.PHONY: server
+run: 
+	java -cp out Server
 
 .PHONY: clean
 clean:
