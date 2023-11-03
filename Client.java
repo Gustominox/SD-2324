@@ -8,16 +8,13 @@ import java.net.Socket;
 class Client {
 
   private Socket socket; // = new Socket("Legion", 9090);
-  private BufferedReader br;
-  private BufferedWriter rw;
+  private SocketsManager sManager;
   private Interface i = new Interface();
 
   public Client() throws IOException {
 
     socket = new Socket("localhost", 9090);
-
-    br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    rw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+    sManager = new SocketsManager(socket);
 
     System.out.println(socket.getPort());
   }
@@ -31,37 +28,12 @@ class Client {
   public void login() throws IOException {
     String username = i.readline();
 
-    this.send(username);
+    sManager.send(username);
   }
 
-  /**
-   *
-   * @param msg
-   * @throws IOException
-   */
-  public void send(String msg) throws IOException {
-    this.rw.write(msg);
-    this.rw.flush();
-  }
-
-  /**
-   *
-   * @param size
-   */
-  public String recv(int size) throws IOException {
-    StringBuilder recString = new StringBuilder();
-
-    for (int i = 0; i < size; i++) {
-      int c =  br.read();
-      if (c != -1) recString.append((char) c);
-      else return recString.toString();
-    }
-
-    return recString.toString();
-  }
 
   public static void main(String[] args) throws IOException {
     Client c = new Client();
-    c.send("HELLO WORLD");
+    c.sManager.send("HELLO WORLD");
   }
 }
