@@ -19,14 +19,6 @@ public void loopMenu() {
         printMenu();
         this.readline();
 
-        switch (Finished) {
-            case value:
-                
-                break;
-        
-            default:
-                break;
-        }
     }
 }
 
@@ -58,5 +50,7 @@ public void loopMenu() {
     this.print("Client > ");
   }
 
-  private static int getEscolha(){}
+  private static int getEscolha(){
+    return 0;
+  }
 }
