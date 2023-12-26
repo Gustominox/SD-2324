@@ -8,6 +8,7 @@ import java.net.Socket;
 class SocketsManager {
 
   private Socket socket;
+  
   private BufferedReader br;
   private BufferedWriter rw;
 
@@ -25,18 +26,29 @@ class SocketsManager {
   }
 
   public void send(String msg) throws IOException {
+    System.out.println("Sending data");
     this.rw.write(msg);
     this.rw.flush();
   }
 
   public String recv(int size) throws IOException {
+    System.out.println("Receiving data");
     StringBuilder recString = new StringBuilder();
 
     for (int i = 0; i < size; i++) {
-      int c = br.read();
-      if (c != -1) recString.append((char) c); else return recString.toString();
-    }
+                System.out.println(i);
 
+      int c = br.read();
+      if (c != -1) {
+        System.out.println((char) c);
+
+        recString.append((char) c);
+      } else {
+        System.out.println(c);
+
+        return recString.toString();
+      }
+    }
     return recString.toString();
   }
 }

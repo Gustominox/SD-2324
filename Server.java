@@ -8,7 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
-
 public class Server {
 
   private ServerSocket socket;
@@ -38,15 +37,12 @@ public class Server {
     public ClientHandler(Socket socket) {
       this.client = socket;
       this.sManager = new SocketsManager(socket);
-    
     }
 
     public void run() {
       try {
         // DataOutputStream dOutStream = new DataOutputStream(clientSoc.getOutputStream());
-
-        String recString = sManager.recv(1024);
-        System.out.println(recString);
+        this.tryLogin();
       } catch (IOException e) {} finally {
         try {
           this.client.close();
@@ -55,7 +51,26 @@ public class Server {
         }
       }
     }
-  
+
+    private void tryLogin() throws IOException {
+      System.out.println("Getting user");
+      String username = sManager.recv(1024);
+      System.out.println(username);
+
+      if (
+        username == "Default"
+      ) { // TODO: check if user exists
+        sManager.send("Correct User");
+        String password = sManager.recv(1024);
+
+        if (
+          password == "password"
+        ) { // TODO: check if password exists
+          sManager.send("Correct Password");
+        }
+      }else sManager.send("Wrong User");
+
+    }
   }
 
   public static void main(String[] args) throws IOException {

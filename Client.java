@@ -27,13 +27,25 @@ class Client {
    */
   public void login() throws IOException {
     String username = i.readline();
-
+    System.out.println("Sending username");
     sManager.send(username);
+    System.out.println("Wating for response");
+
+    i.print(sManager.recv(12));
+    
+
+    String password = i.readline();
+    sManager.send(password);
+    i.print(sManager.recv(12));
+
+
+
+
   }
 
 
   public static void main(String[] args) throws IOException {
     Client c = new Client();
-    c.sManager.send("HELLO WORLD");
+    c.login();
   }
 }
