@@ -6,15 +6,22 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Server {
 
   private ServerSocket socket;
-  private Map<String, String> user;
+  private Map<String, Utilizador> user;
+  private ReentrantReadWriteLock maplock;
 
   public Server() throws IOException {
     socket = new ServerSocket(9090);
+    user = new HashMap<>();
+    maplock = new ReentrantReadWriteLock();
   }
 
   public void start() throws IOException {
@@ -28,16 +35,61 @@ public class Server {
     }
   }
 
+  public Boolean regist (String username, String password) throws IOException {
+    Boolean result = true;
+    
+    maplock.readLock().lock();
+    //verifcar se o username ja existe
+    if(user.containsKey(username)){
+      System.out.println("o username ja existe\n");
+      result = false;
+      maplock.readLock().unlock();
+    }
+    //senao existir criar
+    else{
+      maplock.readLock().unlock();
+      Utilizador newUser = new Utilizador(username, password);
+      maplock.writeLock().lock();
+      user.put(username, newUser);
+      maplock.writeLock().unlock();
+    }
+    return result;
+  }
+
+  public Boolean login (String username, String password) throws IOException {
+    Boolean result = false;
+
+    maplock.readLock().lock();
+    //verifica se o user name existe
+    if(user.containsKey(username)){
+      //verifica se a passeword esta correta
+      if(user.get(username).getPassword().equals(password)){
+        //verifica se o user ja nao esta online
+        if(user.get(username).getStatus().equals(false)){
+          result = true;
+        } else System.out.println("o user já está ativo");
+      } else System.out.println("password errada\n");
+    } else System.out.println("o user nao existe\n");
+
+    maplock.readLock().unlock();
+    return result;
+}
+
+
+
+
   public static class ClientHandler implements Runnable {
 
     private final Socket client;
     private SocketsManager sManager;
-
+    
     //constructor
     public ClientHandler(Socket socket) {
       this.client = socket;
       this.sManager = new SocketsManager(socket);
     }
+
+
 
     public void run() {
       try {
