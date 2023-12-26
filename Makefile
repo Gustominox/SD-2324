@@ -6,15 +6,15 @@ CLASS_FILES = ./*.class
 .DEFAULT_GOAL = build
 
 build: 
-	$(JAVAC) -d out *.java
+	$(JAVAC) -cp sd23.jar -d out *.java
 
 .PHONY: client
 client: 
-	java -cp out Client
+	java -cp sd23.jar:out Client
 
 .PHONY: server
 server: 
-	java -cp out Server
+	java -cp sd23.jar:out Server
 
 .PHONY: clean
 clean:
