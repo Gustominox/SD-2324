@@ -1,0 +1,36 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.*;
+
+public class InterfaceUser{
+
+
+   //retorna string : tarefa;tarefa;tarefa;
+
+    public String buscarTarefas(String filePath) {
+        StringBuilder res = new StringBuilder();
+        try (DataInputStream input = new DataInputStream(new FileInputStream(filePath))){
+            String linha;
+            while (linha = input.readUTF() != null){
+                res.append(linha);
+            }
+        }
+    return res;
+    }
+
+    //recebe rdt;rdt;rdt; e cria ficheiro com rdt;\nrdt;\nrdt;          rdt = resultado de tarefa
+
+    public void escreverResultadosTarefa(String s, String filePath){
+        try (DataOutputStream output = new DataOutputStream(new FileOutputStream(filePath))){
+            String[] res = s.split(";");
+            for (String s : res) {
+                output.writeUTF(result + ";\n");
+            }
+        }
+    }
+
+
+}
