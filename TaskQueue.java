@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TaskQueue {
 
-  private final int totalMemory = 200;
+  private final int totalMemory;
   private int currentMemory = 0;
 
   private Queue<Task> taskQueue;
@@ -17,8 +17,9 @@ public class TaskQueue {
   Condition notEmpty;
   Condition memUpdated;
 
-  public TaskQueue() {
-    // Use a PriorityQueue instead of LinkedList
+  public TaskQueue(int totalMemory) {
+
+    this.totalMemory = totalMemory;
     this.taskQueue = new PriorityQueue<>();
 
     // this.lock = new ReentrantLock();
@@ -125,7 +126,7 @@ public class TaskQueue {
   }
 
   public static void main(String[] args) {
-    TaskQueue taskQueue = new TaskQueue();
+    TaskQueue taskQueue = new TaskQueue(600);
 
     // Example of adding tasks to the queue
     taskQueue.addTask(new Task("Task 1", 200, 0, new byte[1000]));
