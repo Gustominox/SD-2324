@@ -8,7 +8,9 @@ public class Task implements Runnable, Comparable<Task> {
     private String name;
     private int memory;
     private int priority; // Added priority field
-    private byte[] bytes;
+    private byte[] input;
+    private byte[] output;
+
 
     public String getName() {
         return name;
@@ -30,13 +32,13 @@ public class Task implements Runnable, Comparable<Task> {
     }
 
 
-    public byte[] getBytes() {
-        return bytes;
+    public byte[] getInput() {
+        return input;
     }
 
 
-    public void setBytes(byte[] bytes) {
-        this.bytes = bytes;
+    public void setInput(byte[] bytes) {
+        this.input = bytes;
     }
 
 
@@ -44,7 +46,7 @@ public class Task implements Runnable, Comparable<Task> {
         this.name = name;
         this.memory = memory;
         this.priority = priority;
-        this.bytes = bytes;
+        this.input = bytes;
     }
 
 
@@ -58,20 +60,20 @@ public class Task implements Runnable, Comparable<Task> {
 
     @Override
     public void run() {
-        System.out.println(
-                "Start Task '" + this.name + "' using " + this.memory + " bytes " + this.priority + " priority" + " -> " + Thread.currentThread().getName()
-        );
+        // System.out.println(
+        //         "Start Task '" + this.name + "' using " + this.memory + " bytes " + this.priority + " priority" + " -> " + Thread.currentThread().getName()
+        // );
         try {
             // execute the task
-            byte[] output = JobFunction.execute(this.bytes);
+            this.output = JobFunction.execute(this.input);
 
             // use the result or report the error
-            // System.err.println("success, returned " + output.length + " bytes");
+            System.err.println("success, returned " + output.length + " bytes");
 
         } catch (JobFunctionException e) {
 
             System.err.println(
-                    // "job failed: code=" + e.getCode() + " message=" + e.getMessage()
+                    "job failed: code=" + e.getCode() + " message=" + e.getMessage()
             );
 
         } catch (Exception e) {
