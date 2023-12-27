@@ -35,20 +35,8 @@ class SocketsManager {
     System.out.println("Receiving data");
     StringBuilder recString = new StringBuilder();
 
-    for (int i = 0; i < size; i++) {
-      System.out.println(i);
-
-      int c = br.read();
-      if (c != -1) {
-        System.out.println((char) c);
-
-        recString.append((char) c);
-      } else {
-        System.out.println(c);
-
-        return recString.toString();
-      }
-    }
+    
+    
     return recString.toString();
   }
 
