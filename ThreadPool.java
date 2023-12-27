@@ -1,9 +1,14 @@
+import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadPool {
 
   private final TaskQueue taskQueue;
   private final WorkerThread[] workers;
+  private Lock lCompTasks = new ReentrantLock();
+  private final LinkedList<Task> completedTasks = new LinkedList<>();
 
   public ThreadPool(int numThreads) {
     this.taskQueue = new TaskQueue(2000);
@@ -11,14 +16,20 @@ public class ThreadPool {
 
     for (int i = 0; i < numThreads; i++) {
       workers[i] = new WorkerThread();
-      
     }
   }
 
+  public Task getCompTask() {
+    Task front = null;
+    if (!completedTasks.isEmpty()) {
+      front = completedTasks.removeFirst();
+    }
+    return front;
+  }
 
   public void start() {
     for (int i = 0; i < workers.length; i++) {
-        workers[i].start(); 
+      workers[i].start();
     }
   }
 
@@ -27,16 +38,15 @@ public class ThreadPool {
   }
 
   public void shutdown() {
-    
     taskQueue.shutdown();
-    
+
     for (WorkerThread worker : workers) {
       worker.interrupt();
     }
   }
 
   private class WorkerThread extends Thread {
-    
+
     @Override
     public void run() {
       try {
@@ -46,13 +56,19 @@ public class ThreadPool {
             task.run();
             // task.output
             // task.id
-            // insere na lista de resposta (Completed tasks) 
+            // insere na lista de resposta (Completed tasks)
+            try {
+              lCompTasks.lock();
+              completedTasks.addLast(task);
+            } finally {
+              lCompTasks.unlock();
+            }
             taskQueue.reduceMemory(task.getMemory());
           }
         }
       } catch (InterruptedException e) {
         // Restore the interrupted status
-        
+
         Thread.currentThread().interrupt();
       }
     }
