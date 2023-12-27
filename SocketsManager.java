@@ -8,7 +8,7 @@ import java.net.Socket;
 class SocketsManager {
 
   private Socket socket;
-  
+
   private BufferedReader br;
   private BufferedWriter rw;
 
@@ -36,7 +36,7 @@ class SocketsManager {
     StringBuilder recString = new StringBuilder();
 
     for (int i = 0; i < size; i++) {
-                System.out.println(i);
+      System.out.println(i);
 
       int c = br.read();
       if (c != -1) {
@@ -52,7 +52,11 @@ class SocketsManager {
     return recString.toString();
   }
 
-public void close() throws IOException {
-  this.socket.close();
-}
+  public void close() throws IOException {
+    this.socket.close();
+  }
+
+  public boolean isClosed() {
+    return this.socket.isClosed();
+  }
 }
