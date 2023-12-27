@@ -51,4 +51,8 @@ class SocketsManager {
     }
     return recString.toString();
   }
+
+public void close() throws IOException {
+  this.socket.close();
+}
 }
