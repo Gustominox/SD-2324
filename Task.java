@@ -11,6 +11,9 @@ public class Task implements Runnable, Comparable<Task> {
     private byte[] input;
     private byte[] output;
 
+    private int code;
+    private String message;
+
 
     public String getName() {
         return name;
@@ -72,8 +75,11 @@ public class Task implements Runnable, Comparable<Task> {
 
         } catch (JobFunctionException e) {
 
+            this.code = e.getCode();
+            this.message = e.getMessage();
+
             System.err.println(
-                    "job failed: code=" + e.getCode() + " message=" + e.getMessage()
+                    "job failed: code = " + this.code + " message = " + this.message
             );
 
         } catch (Exception e) {
