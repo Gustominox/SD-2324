@@ -8,20 +8,20 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TaskQueue {
 
-  private final int totalMemory = 501;
+  private final int totalMemory = 200;
   private int currentMemory = 0;
 
   private Queue<Task> taskQueue;
 
-  private ReentrantLock lock;
-  private Condition notEmpty;
-  private Condition memUpdated;
+  ReentrantLock lock = new ReentrantLock();
+  Condition notEmpty;
+  Condition memUpdated;
 
   public TaskQueue() {
     // Use a PriorityQueue instead of LinkedList
     this.taskQueue = new PriorityQueue<>();
 
-    this.lock = new ReentrantLock();
+    // this.lock = new ReentrantLock();
     this.notEmpty = lock.newCondition();
     this.memUpdated = lock.newCondition();
   }
@@ -51,21 +51,37 @@ public class TaskQueue {
     lock.lock();
     try {
       while (taskQueue.isEmpty()) {
-        System.out.println("Fila vazia Thread a espera!!");
+        System.out.println(
+          "Fila vazia Thread a espera!! -> " + Thread.currentThread().getName()
+        );
         notEmpty.await(); // Wait until a task is available
       }
 
-      Task nextTask = taskQueue.poll();
+      Task nextTask = taskQueue.peek();
+      Task currentTask = taskQueue.peek();
 
-      if (nextTask.getPriority() == 5) {
-        // System.out.println("Checking " + nextTask.getName());
-        while ((this.currentMemory + nextTask.getMemory()) > this.totalMemory) {
-            System.out.println("Awaiting to start " + nextTask.getName());
+      if (nextTask.getPriority() >= 5) {
+        // System.out.println("Checking " + nextTask.getName()
+              // + "and Checking " + nextTask.getName() );
+        while (
+          (nextTask.getName() == currentTask.getName()) && // se a task ja saiu do topo da queue
+          (this.currentMemory + nextTask.getMemory()) > this.totalMemory // se ela ainda esta no topo da queue e ja ha memoria para executar
+        ) {
+          System.out.println(
+            "Awaiting to start " +
+            nextTask.getName() +
+            " -> " +
+            Thread.currentThread().getName()
+          );
           memUpdated.await();
+          currentTask = taskQueue.peek();
         }
-        this.currentMemory += nextTask.getMemory();
-        return nextTask;
+        // nextTask.setPriority(4); // try to
+        // return null;
       }
+
+      nextTask = taskQueue.poll();
+
       // List to store tasks that don't fit into available memory
       List<Task> tasksToRemove = new ArrayList<>();
 
@@ -92,7 +108,11 @@ public class TaskQueue {
         // Update the current memory and remove the suitable task from the queue
         this.currentMemory += nextTask.getMemory();
       } else { // MEMORIA CHEIA
-        System.out.println("Memoria cheia thread a espera!!!");
+        System.out.println(
+          "Memoria cheia thread a espera!!!" +
+          " -> " +
+          Thread.currentThread().getName()
+        );
         memUpdated.await(); // Wait until a task is available
       }
 
@@ -113,7 +133,7 @@ public class TaskQueue {
     taskQueue.addTask(new Task("Task 3", 200, 0, new byte[1000]));
     taskQueue.addTask(new Task("Task 4", 200, 0, new byte[1000]));
     taskQueue.addTask(new Task("Task 5", 200, 0, new byte[1000]));
-    taskQueue.addTask(new Task("Task 9", 500, 5, new byte[1000]));
+    taskQueue.addTask(new Task("Task 9", 200, 5, new byte[1000]));
 
     taskQueue.addTask(new Task("Task 6", 200, 0, new byte[1000]));
     taskQueue.addTask(new Task("Task 7", 200, 5, new byte[1000]));
@@ -138,9 +158,12 @@ public class TaskQueue {
           }
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
+          System.out.println("INTERROMPIDA!!");
         }
       });
       poolThread.start();
     }
   }
+
+  public void shutdown() {}
 }
