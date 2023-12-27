@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -8,19 +8,22 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TaskQueue {
 
-  private final int totalMemory = 500;
+  private final int totalMemory = 501;
   private int currentMemory = 0;
 
   private Queue<Task> taskQueue;
 
-  private Lock lock;
+  private ReentrantLock lock;
   private Condition notEmpty;
+  private Condition memUpdated;
 
   public TaskQueue() {
-    this.taskQueue = new LinkedList<>();
+    // Use a PriorityQueue instead of LinkedList
+    this.taskQueue = new PriorityQueue<>();
 
     this.lock = new ReentrantLock();
     this.notEmpty = lock.newCondition();
+    this.memUpdated = lock.newCondition();
   }
 
   public void addTask(Task task) {
@@ -38,6 +41,7 @@ public class TaskQueue {
     try {
       // Ensure the memory reduction won't go below zero
       this.currentMemory = Math.max(0, this.currentMemory - memoryToReduce);
+      this.memUpdated.signalAll();
     } finally {
       lock.unlock();
     }
@@ -47,33 +51,52 @@ public class TaskQueue {
     lock.lock();
     try {
       while (taskQueue.isEmpty()) {
+        System.out.println("Fila vazia Thread a espera!!");
         notEmpty.await(); // Wait until a task is available
       }
 
-      Task nextTask = taskQueue.peek(); // Peek at the next task without removing it
+      Task nextTask = taskQueue.poll();
 
+      if (nextTask.getPriority() == 5) {
+        // System.out.println("Checking " + nextTask.getName());
+        while ((this.currentMemory + nextTask.getMemory()) > this.totalMemory) {
+            System.out.println("Awaiting to start " + nextTask.getName());
+          memUpdated.await();
+        }
+        this.currentMemory += nextTask.getMemory();
+        return nextTask;
+      }
       // List to store tasks that don't fit into available memory
       List<Task> tasksToRemove = new ArrayList<>();
 
       while (
-        nextTask != null &&
-        (this.currentMemory + nextTask.getMemory()) > this.totalMemory
+        nextTask != null && // chegou ao fim da queue nenhuma da
+        (this.currentMemory + nextTask.getMemory()) > this.totalMemory // encontrou uma que da para executar
       ) {
         // The task doesn't fit into available memory, add it to the list for later addition
-        tasksToRemove.add(taskQueue.poll());
+
+        tasksToRemove.add(nextTask);
 
         // Check the next task in the queue
-        nextTask = taskQueue.peek();
+        nextTask = taskQueue.poll();
       }
+
+      // saiu queue
+      if (
+        nextTask != null
+      ) for (Task task : tasksToRemove) task.increasePriority();
+
+      taskQueue.addAll(tasksToRemove);
 
       if (nextTask != null) {
         // Update the current memory and remove the suitable task from the queue
         this.currentMemory += nextTask.getMemory();
-        taskQueue.poll();
+      } else { // MEMORIA CHEIA
+        System.out.println("Memoria cheia thread a espera!!!");
+        memUpdated.await(); // Wait until a task is available
       }
 
       // Add the removed tasks back to the queue
-      taskQueue.addAll(tasksToRemove);
 
       return nextTask;
     } finally {
@@ -85,12 +108,19 @@ public class TaskQueue {
     TaskQueue taskQueue = new TaskQueue();
 
     // Example of adding tasks to the queue
-    taskQueue.addTask(new Task("Task 1", 200));
-    taskQueue.addTask(new Task("Task 2", 200));
-    taskQueue.addTask(new Task("Task 3", 200));
-    taskQueue.addTask(new Task("Task 4", 200));
+    taskQueue.addTask(new Task("Task 1", 200, 0, new byte[1000]));
+    taskQueue.addTask(new Task("Task 2", 200, 0, new byte[1000]));
+    taskQueue.addTask(new Task("Task 3", 200, 0, new byte[1000]));
+    taskQueue.addTask(new Task("Task 4", 200, 0, new byte[1000]));
+    taskQueue.addTask(new Task("Task 5", 200, 0, new byte[1000]));
+    taskQueue.addTask(new Task("Task 9", 500, 5, new byte[1000]));
 
-    taskQueue.addTask(new Task("Task 5", 100));
+    taskQueue.addTask(new Task("Task 6", 200, 0, new byte[1000]));
+    taskQueue.addTask(new Task("Task 7", 200, 5, new byte[1000]));
+    taskQueue.addTask(new Task("Task 8", 200, 5, new byte[1000]));
+    taskQueue.addTask(new Task("Task 10", 200, 0, new byte[1000]));
+
+    // taskQueue.addTask(new Task("Task 10", 200, 0, new byte[1000]));
 
     // Example of processing tasks from the queue in a separate thread
 
@@ -99,12 +129,11 @@ public class TaskQueue {
         try {
           while (true) {
             Task task = taskQueue.getTask();
+
             if (task != null) {
-            //   System.out.println(task.toString());
               task.run();
+
               taskQueue.reduceMemory(task.getMemory());
-            } else {
-              // System.out.println("No task fits!!!");
             }
           }
         } catch (InterruptedException e) {
