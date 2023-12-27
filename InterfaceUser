@@ -8,26 +8,28 @@ import java.io.*;
 public class InterfaceUser{
 
 
-   //retorna string : tarefa;tarefa;tarefa;
+   //recebe ficheiro tarefa;espaço;o que é para fazer --> retorna bytes do que é para fazer
 
-    public String buscarTarefas(String filePath) {
-        StringBuilder res = new StringBuilder();
+    public byte[][] buscarTarefas(String filePath) {
+        List<byte[]> result = new ArrayList<>();
         try (DataInputStream input = new DataInputStream(new FileInputStream(filePath))){
             String linha;
-            while (linha = input.readUTF() != null){
-                res.append(linha);
+            while (linha = input.readLine() != null){
+                String[] campo = linha.split(";");
+                byte[] tercampo = campo[2].getBytes();
+                result.add(tercampo);
             }
         }
-    return res;
+        return result.toArray(new byte[0][]);
     }
 
-    //recebe rdt;rdt;rdt; e cria ficheiro com rdt;\nrdt;\nrdt;          rdt = resultado de tarefa
+    //recebe resultado em bytes --> criar ficheiro com resultados
 
-    public void escreverResultadosTarefa(String s, String filePath){
+    public void escreverResultadosTarefa(byte[][] resBytes, String filePath){
         try (DataOutputStream output = new DataOutputStream(new FileOutputStream(filePath))){
-            String[] res = s.split(";");
-            for (String s : res) {
-                output.writeUTF(result + ";\n");
+            for (byte[] linha : resBytes){
+                output.write(linha);
+                output.write('\n');
             }
         }
     }
