@@ -59,19 +59,19 @@ public class Task implements Runnable, Comparable<Task> {
     @Override
     public void run() {
         System.out.println(
-                "Start Task '" + this.name + "' using " + this.memory + " bytes " + this.priority + " priority"
+                "Start Task '" + this.name + "' using " + this.memory + " bytes " + this.priority + " priority" + " -> " + Thread.currentThread().getName()
         );
         try {
             // execute the task
             byte[] output = JobFunction.execute(this.bytes);
 
             // use the result or report the error
-            System.err.println("success, returned " + output.length + " bytes");
+            // System.err.println("success, returned " + output.length + " bytes");
 
         } catch (JobFunctionException e) {
 
             System.err.println(
-                    "job failed: code=" + e.getCode() + " message=" + e.getMessage()
+                    // "job failed: code=" + e.getCode() + " message=" + e.getMessage()
             );
 
         } catch (Exception e) {
