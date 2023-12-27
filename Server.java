@@ -15,13 +15,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Server {
 
   private ServerSocket socket;
-  private Map<String, Utilizador> user;
-  private ReentrantReadWriteLock maplock;
+  private static final Map<String, Utilizador> user;
+  private static final ReentrantReadWriteLock mapLock;
 
   public Server() throws IOException {
     socket = new ServerSocket(9090);
     user = new HashMap<>();
-    maplock = new ReentrantReadWriteLock();
+    mapLock = new ReentrantReadWriteLock();
   }
 
   public void start() throws IOException {
@@ -35,93 +35,98 @@ public class Server {
     }
   }
 
-  public Boolean regist (String username, String password) throws IOException {
+  public Boolean regist(String username, String password) throws IOException {
     Boolean result = true;
-    
-    maplock.readLock().lock();
+
+    mapLock.readLock().lock();
     //verifcar se o username ja existe
-    if(user.containsKey(username)){
+    if (user.containsKey(username)) {
       System.out.println("o username ja existe\n");
       result = false;
-      maplock.readLock().unlock();
+      mapLock.readLock().unlock();
     }
     //senao existir criar
-    else{
-      maplock.readLock().unlock();
+    else {
+      mapLock.readLock().unlock();
       Utilizador newUser = new Utilizador(username, password);
-      maplock.writeLock().lock();
+      mapLock.writeLock().lock();
       user.put(username, newUser);
-      maplock.writeLock().unlock();
+      mapLock.writeLock().unlock();
     }
     return result;
   }
 
-  public Boolean login (String username, String password) throws IOException {
+  public Boolean login(String username, String password) throws IOException {
     Boolean result = false;
 
-    maplock.readLock().lock();
+    mapLock.readLock().lock();
     //verifica se o user name existe
-    if(user.containsKey(username)){
-      //verifica se a passeword esta correta
-      if(user.get(username).getPassword().equals(password)){
+    if (user.containsKey(username)) {
+      //verifica se a password esta correta
+      if (user.get(username).getPassword().equals(password)) {
         //verifica se o user ja nao esta online
-        if(user.get(username).getStatus().equals(false)){
+        if (user.get(username).getStatus().equals(false)) {
           result = true;
         } else System.out.println("o user já está ativo");
       } else System.out.println("password errada\n");
     } else System.out.println("o user nao existe\n");
 
-    maplock.readLock().unlock();
+    mapLock.readLock().unlock();
     return result;
-}
+  }
 
+  private class ClientHandler implements Runnable {
 
-
-
-  public static class ClientHandler implements Runnable {
-
-    private final Socket client;
+    // private final Socket client;
     private SocketsManager sManager;
-    
+
     //constructor
     public ClientHandler(Socket socket) {
-      this.client = socket;
+      // this.client = socket;
       this.sManager = new SocketsManager(socket);
     }
 
-
-
     public void run() {
       try {
-        // DataOutputStream dOutStream = new DataOutputStream(clientSoc.getOutputStream());
-        this.tryLogin();
+
+        // logica do servidor 
+            while(!sManager.isClosed()) {// le socket
+              
+              Message message = sManager.getMessage();
+
+              // Logica de diferenciar a mensagem
+              if (message.getType() == tryLogging ) {
+                
+              } else if (message.getType() == registo ) {
+                
+              }else{
+                System.err.println("Mensagem não reconhecida");
+              }
+
+            }
+            
+        }
+      
+      
+      
       } catch (IOException e) {} finally {
         try {
-          this.client.close();
+          this.sManager.close();
         } catch (Exception e) {
           e.printStackTrace();
         }
       }
     }
 
-    private void tryLogin() throws IOException {
-      System.out.println("Getting user");
-      String username = sManager.recv(1024);
-      System.out.println(username);
+    public Boolean tryLogin() throws IOException {
+      Boolean result = false;
 
-      if (
-        username == "Default"
-      ) { // TODO: check if user exists
-        sManager.send("Correct User");
-        String password = sManager.recv(1024);
+      String username = sManager.getMessage();
+      String password = sManager.getMessage();
 
-        if (
-          password == "password"
-        ) { // TODO: check if password exists
-          sManager.send("Correct Password");
-        }
-      }else sManager.send("Wrong User");
+      result = login(username, password);
 
+      return result;
     }
   }
 
