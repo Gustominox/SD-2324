@@ -147,32 +147,17 @@ class SocketsManager {
     out.flush();
   }
 
-  public String recv(int size) throws IOException {
-    System.out.println("Receiving data");
-    StringBuilder recString = new StringBuilder();
-
-    for (int i = 0; i < size; i++) {
-      System.out.println(i);
-
-      int c = br.read();
-      if (c != -1) {
-        System.out.println((char) c);
-
-        recString.append((char) c);
-      } else {
-        System.out.println(c);
-
-        return recString.toString();
-      }
-    }
-    return recString.toString();
-  }
-
   public void close() throws IOException {
     this.socket.close();
   }
 
   public boolean isClosed() {
     return this.socket.isClosed();
+  }
+
+  public int available() throws IOException {
+    int bytesToRead = in.available();
+
+    return bytesToRead;
   }
 }
