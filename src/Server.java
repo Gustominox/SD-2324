@@ -100,35 +100,51 @@ public class Server {
 
     public void run() {
       try {
-        while (!sManager.isClosed()) { // le socket
-          char type = sManager.readChar();
+        while (!sManager.isClosed()) {
+          if (sManager.available() > 0) { // le socket
+            char type = sManager.readChar();
 
-          // Logica de diferenciar a mensagem
+            // Logica de diferenciar a mensagem
+            System.out.println("LI: " + type);
+            if (type == 'l') { // tentativa de logging
+              System.out.println("Received logging msg");
 
-          if (type == 'l') { // tentativa de logging
-            String username = sManager.readString();
-            String password = sManager.readString();
+              String username = sManager.readString();
+              String password = sManager.readString();
 
-            Boolean r = login(username, password);
+              Boolean r = login(username, password);
 
-            sManager.sendLoginResponse(r);
-          } else if (type == 'e') { // pedido de processamento
-            String nome = sManager.readString();
-            int tmh = sManager.readInt();
-            byte code[] = sManager.readBytes(tmh);
+              sManager.sendLoginResponse(r);
+            } else if (type == 'p') { // pedido de processamento
+              System.out.println("Received process msg");
 
-            Task task = new Task(nome, tmh, 0, code);
+              String nome = sManager.readString();
+              int tmh = sManager.readInt();
+              byte code[] = sManager.readBytes(tmh);
 
-            // Submit uma task na thread pool
-            threadPool.submitTask(task);
-          } else {
-            System.err.println("Mensagem não reconhecida");
+              Task task = new Task(nome, tmh, 0, code);
+
+              // Submit uma task na thread pool
+              threadPool.submitTask(task);
+            } else if (type == 'r') {
+              System.out.println("Received Regist msg");
+              String username = sManager.readString();
+              String password = sManager.readString();
+              Boolean r = regist(username, password);
+              sManager.sendRegistResponse(r);
+            } else { // pedido de processamento
+              System.err.println("Mensagem não reconhecida");
+            }
           }
         }
       } catch (IOException ioException) {
         System.err.println("Error in server loop: " + ioException.getMessage());
         ioException.printStackTrace();
-      } finally {}
+      } catch (Exception e) {
+        e.printStackTrace();
+      } finally {
+        System.out.println("Client Closed!!");
+      }
     }
   }
 
