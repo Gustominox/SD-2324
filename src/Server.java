@@ -97,7 +97,7 @@ public class Server {
 
               // Logica de diferenciar a mensagem
 
-              if (type == 'L' ) {
+              if (type == 'l' ) { // tentativa de logging
 
                 String username = sManager.readString();
                 String password = sManager.readString();
@@ -105,11 +105,16 @@ public class Server {
                 Boolean r = login(username, password);
               
                 sManager.sendLoginResponse(r);
+
+              } else if (type == 'e' ) { // pedido de processamento
+                
+                String nome = sManager.readString();
+                int tmh = sManager.readInt();
+                Byte code[] =  sManager.readBytes(tmh);
+
                 
 
 
-              } else if (type == 'g' ) {
-                
               }else{
                 System.err.println("Mensagem não reconhecida");
               }
