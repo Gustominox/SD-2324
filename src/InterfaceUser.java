@@ -3,10 +3,33 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Scanner;
 import java.io.*;
 
 public class InterfaceUser{
 
+
+    Scanner scanner = new Scanner(System.in);
+    while (true){
+        System.out.println("--  LOGIN MENU:  --");
+        System.out.println("1. Login\n");
+        System.out.println("2. Register\n");
+        System.out.println("3. Exit\n");
+        System.out.println("Escolha a sua opção: ");
+        int opcao = scanner.nextInt();
+        scanner.nextLine();
+
+        switch(opcao){
+            case 1:
+                login();
+            case 2:
+                regist();
+            case 3:
+                System.out.println("Obrigado, Volte Sempre!");
+            default:
+                System.out.println("Escolha Inválida. Introduza opção novamente: ");
+        }
+    }
 
     public byte[][] buscarTarefas(String filePath) {
         List<byte[]> result = new ArrayList<>();
