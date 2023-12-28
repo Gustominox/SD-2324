@@ -15,12 +15,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Server {
 
   private ServerSocket socket;
-  private final Map<String, Utilizador> user;
+  private final Map<String, Utilizador> userMap;
   private final ReentrantReadWriteLock mapLock;
 
   public Server() throws IOException {
     socket = new ServerSocket(9090);
-    user = new HashMap<>();
+    userMap = new HashMap<>();
     mapLock = new ReentrantReadWriteLock();
   }
 
@@ -40,7 +40,7 @@ public class Server {
 
     mapLock.readLock().lock();
     //verifcar se o username ja existe
-    if (user.containsKey(username)) {
+    if (userMap.containsKey(username)) {
       System.out.println("o username ja existe\n");
       result = false;
       mapLock.readLock().unlock();
@@ -50,7 +50,7 @@ public class Server {
       mapLock.readLock().unlock();
       Utilizador newUser = new Utilizador(username, password);
       mapLock.writeLock().lock();
-      user.put(username, newUser);
+      userMap.put(username, newUser);
       mapLock.writeLock().unlock();
     }
     return result;
@@ -61,13 +61,13 @@ public class Server {
 
     mapLock.readLock().lock();
     //verifica se o user name existe
-    if (user.containsKey(username)) {
+    if (userMap.containsKey(username)) {
       //verifica se a password esta correta
-      if (user.get(username).getPassword().equals(password)) {
+      if (userMap.get(username).getPassword().equals(password)) {
         //verifica se o user ja nao esta online
-        if (user.get(username).getStatus().equals(false)) {
+        if (userMap.get(username).getStatus().equals(false)) {
           result = true;
-          // user.get(username).setStatus(true);
+          // userMap.get(username).setStatus(true);
         } else System.out.println("o user já está ativo");
       } else System.out.println("password errada\n");
     } else System.out.println("o user nao existe\n");
@@ -125,14 +125,11 @@ public class Server {
       
       
       
-      } catch (IOException e) {} finally {
-        
-        try {
-          this.sManager.close();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+       catch (IOException ioException) {
+        System.err.println("Error in server loop: " + ioException.getMessage());
 
+      } finally {
+        sManager.close();
       }
     }
 
