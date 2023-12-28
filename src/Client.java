@@ -6,7 +6,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 class Client {
-
+  
+  private static volatile boolean running = true;
   private Socket socket; // = new Socket("Legion", 9090);
   private SocketsManager sManager;
   private Interface i = new Interface();
@@ -25,6 +26,11 @@ class Client {
    *
    * @throws IOException
    */
+
+  public void pedido(String task, int tam, byte[] code) throws IOException{
+    sManager.sendPedido(task, tam, code);
+  }
+
   public void login() throws IOException {
     String username = i.readline();
     System.out.println("Sending username");
@@ -46,6 +52,7 @@ class Client {
 
   public static void main(String[] args) throws IOException {
     Client c = new Client();
+    c.pedido("ola", 15, new byte[15]);
     c.login();
   }
 }
