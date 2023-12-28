@@ -1,15 +1,8 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Server {
@@ -17,14 +10,21 @@ public class Server {
   private ServerSocket socket;
   private final Map<String, Utilizador> userMap;
   private final ReentrantReadWriteLock mapLock;
+  private final ThreadPool threadPool;
 
-  public Server() throws IOException {
+  public Server(int numberOfThreads) throws IOException {
     socket = new ServerSocket(9090);
     userMap = new HashMap<>();
     mapLock = new ReentrantReadWriteLock();
+
+    // Create a thread pool with worker threads
+    threadPool = new ThreadPool(numberOfThreads);
   }
 
   public void start() throws IOException {
+    // Start the threadPool to handle the execution of the tasks
+    threadPool.start();
+
     while (true) {
       Socket clientSoc = socket.accept();
       System.out.println("Accepted connection");
@@ -35,11 +35,22 @@ public class Server {
     }
   }
 
+  public void close() {
+    try {
+      // Shutdown the thread pool
+      threadPool.shutdown();
+      // Close the server socket
+      socket.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   public Boolean regist(String username, String password) throws IOException {
     Boolean result = true;
 
     mapLock.readLock().lock();
-    //verifcar se o username ja existe
+    //verificar se o username ja existe
     if (userMap.containsKey(username)) {
       System.out.println("o username ja existe\n");
       result = false;
@@ -89,57 +100,40 @@ public class Server {
 
     public void run() {
       try {
+        while (!sManager.isClosed()) { // le socket
+          char type = sManager.readChar();
 
-        
-            while(!sManager.isClosed()) {// le socket
-              
-              char type = sManager.readChar();
+          // Logica de diferenciar a mensagem
 
-              // Logica de diferenciar a mensagem
+          if (type == 'l') { // tentativa de logging
+            String username = sManager.readString();
+            String password = sManager.readString();
 
-              if (type == 'l' ) { // tentativa de logging
+            Boolean r = login(username, password);
 
-                String username = sManager.readString();
-                String password = sManager.readString();
-                
-                Boolean r = login(username, password);
-              
-                sManager.sendLoginResponse(r);
+            sManager.sendLoginResponse(r);
+          } else if (type == 'e') { // pedido de processamento
+            String nome = sManager.readString();
+            int tmh = sManager.readInt();
+            byte code[] = sManager.readBytes(tmh);
 
-              } else if (type == 'e' ) { // pedido de processamento
-                
-                String nome = sManager.readString();
-                int tmh = sManager.readInt();
-                Byte code[] =  sManager.readBytes(tmh);
+            Task task = new Task(nome, tmh, 0, code);
 
-                
-
-
-              }else{
-                System.err.println("Mensagem não reconhecida");
-              }
-
-            }
-            
+            // Submit uma task na thread pool
+            threadPool.submitTask(task);
+          } else {
+            System.err.println("Mensagem não reconhecida");
+          }
         }
-      
-      
-      
-       catch (IOException ioException) {
+      } catch (IOException ioException) {
         System.err.println("Error in server loop: " + ioException.getMessage());
-
-      } finally {
-        sManager.close();
-      }
+        ioException.printStackTrace();
+      } finally {}
     }
-
-    
   }
-}
 
   public static void main(String[] args) throws IOException {
-    Server s = new Server();
+    Server s = new Server(3);
     s.start();
   }
-
 }
