@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -17,9 +19,18 @@ class Client {
   private Lock statusLock = new ReentrantLock();
   private Condition serverStatusUpdate = statusLock.newCondition();
 
+  /*
+   * {key: "TASKNAME" : Value: String -> Sem resultado
+   *                                  -> Recebido com Sucesso, tmh: 1000 bytes
+   *                                  -> Recebido sem Sucesso, code:138 , msg:
+   * }
+   */
+  private final Map<String, String> tasksMap;
+
   public Client() throws IOException {
     socket = new Socket("localhost", 9090);
     sManager = new SocketsManager(socket);
+    tasksMap = new HashMap<String, String>();
 
     System.out.println(socket.getPort());
   }
@@ -66,9 +77,25 @@ class Client {
   public void receive(SocketsManager sManager) throws IOException {
     char type = sManager.readChar();
     if (type == 'x') { //resposta dum pedido
+      char type2 = sManager.readChar();
       String taskName = sManager.readString();
 
-      byte output[] = sManager.readBytes(type);
+      if (type2 == 'S') {
+        byte output[] = sManager.readBytes(type);
+
+        tasksMap.put(
+          taskName,
+          "Recebido com Sucesso, tmh: " + output.length + " bytes"
+        );
+        // TODO: write output to file taskName.txt
+      } else if (type2 == 'I') {
+        int code = sManager.readInt();
+        String msg = sManager.readString();
+        tasksMap.put(
+          taskName,
+          "Recebido sem Sucesso, code: " + code + ", msg: " + msg
+        );
+      }
     } else if (type == 'w') { //resposta duma consulta
       this.ServerStatus = sManager.readString();
       serverStatusUpdate.signal();
