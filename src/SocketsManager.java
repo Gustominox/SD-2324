@@ -21,8 +21,6 @@ import java.net.Socket;
 
  */
 
-
-
 class SocketsManager {
 
   private Socket socket;
@@ -34,17 +32,12 @@ class SocketsManager {
     this.socket = socket;
 
     try {
-      this.in =
-        new DataInputStream(socket.getInputStream());
-      this.out =
-        new DataOutputStream(socket.getOutputStream())
+      this.in = new DataInputStream(socket.getInputStream());
+      this.out = new DataOutputStream(socket.getOutputStream());
     } catch (IOException exception) {
       exception.printStackTrace();
     }
   }
-
-
-
 
   public char readChar() throws IOException {
     return in.readChar();
@@ -54,17 +47,16 @@ class SocketsManager {
     return in.readUTF();
   }
 
-  public int readInt() throws IOException{
+  public int readInt() throws IOException {
     return in.readInt();
   }
 
-  public Byte[] readBytes(int length) throws IOException{
-    
-    Byte array [] = new Byte[length];
-    
+  public Byte[] readBytes(int length) throws IOException {
+    Byte array[] = new Byte[length];
+
     for (int i = 0; i < length; i++) array[i] = in.readByte();
-    
-      return array;
+
+    return array;
   }
 
   public void sendLogin(String user, String password) throws IOException {
@@ -74,7 +66,6 @@ class SocketsManager {
     out.writeUTF(password);
     out.flush();
   }
-
 
   public void sendLoginResponse(Boolean b) throws IOException {
     System.out.println("Sending data");
@@ -109,7 +100,8 @@ class SocketsManager {
     out.flush();
   }
 
-  public void sendPedidoResponse(String task, String result) throws IOException {
+  public void sendPedidoResponse(String task, String result)
+    throws IOException {
     System.out.println("Sending data");
     out.writeChar('x');
     out.writeUTF(task);
@@ -130,18 +122,11 @@ class SocketsManager {
     out.flush();
   }
 
-
-
-  public void sendQuit() throws IOException{
+  public void sendQuit() throws IOException {
     System.out.println("Sending data");
     out.writeChar('q');
     out.flush();
-}
-
-
-
-
-
+  }
 
   public String recv(int size) throws IOException {
     System.out.println("Receiving data");
