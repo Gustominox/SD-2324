@@ -5,17 +5,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 class Client {
-  
+
   private static volatile boolean running = true;
   private Socket socket; // = new Socket("Legion", 9090);
   private SocketsManager sManager;
   private String ServerStatus;
-  private Interface i = new Interface();
+  private Lock statusLock = new ReentrantLock();
+  private Condition serverStatusUpdate = statusLock.newCondition();
 
   public Client() throws IOException {
-
     socket = new Socket("localhost", 9090);
     sManager = new SocketsManager(socket);
 
@@ -29,11 +31,15 @@ class Client {
    * @throws IOException
    */
   public void start() throws IOException {
-    Thread receiveThread = new Thread(() -> receive(sManager));
+    Thread receiveThread = new Thread(() -> {
+      try {
+        receive(sManager);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
     receiveThread.start();
-
   }
-
 
   public Boolean login(String username, String password) throws IOException {
     sManager.sendLogin(username, password);
@@ -44,7 +50,7 @@ class Client {
     sManager.sendRegist(username, password);
     return sManager.recRegist();
   }
- 
+
   public void pedido(String task, int tam, byte[] code) throws IOException {
     sManager.sendPedido(task, tam, code);
   }
@@ -57,24 +63,22 @@ class Client {
     sManager.sendQuit();
   }
 
-
-  public void receive() throws IOException{
+  public void receive(SocketsManager sManager) throws IOException {
     char type = sManager.readChar();
     if (type == 'x') { //resposta dum pedido
+      String taskName = sManager.readString();
 
-    }
-    else if (type == 'w') { //resposta duma consulta
-      
-
+      byte output[] = sManager.readBytes(type);
+    } else if (type == 'w') { //resposta duma consulta
+      this.ServerStatus = sManager.readString();
+      serverStatusUpdate.signal();
     }
   }
 
-
-
-
   public static void main(String[] args) throws IOException {
     Client c = new Client();
-    c.pedido("ola", 15, new byte[15]);
-    c.login();
+    // c.pedido("ola", 15, new byte[15]);
+    c.registo("UserName", "Password");
+    // c.login("UserName", "Password");
   }
 }
