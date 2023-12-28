@@ -51,8 +51,8 @@ class SocketsManager {
     return in.readInt();
   }
 
-  public Byte[] readBytes(int length) throws IOException {
-    Byte array[] = new Byte[length];
+  public byte[] readBytes(int length) throws IOException {
+    byte array[] = new byte[length];
 
     for (int i = 0; i < length; i++) array[i] = in.readByte();
 
