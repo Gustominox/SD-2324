@@ -43,6 +43,30 @@ class SocketsManager {
     }
   }
 
+
+
+
+  public char readChar() throws IOException {
+    return in.readChar();
+  }
+
+  public String readString() throws IOException {
+    return in.readUTF();
+  }
+
+  public int readInt() throws IOException{
+    return in.readInt();
+  }
+
+  public Byte[] readBytes(int length) throws IOException{
+    
+    Byte array [] = new Byte[length];
+    
+    for (int i = 0; i < length; i++) array[i] = in.readByte();
+    
+      return array;
+  }
+
   public void sendLogin(String user, String password) throws IOException {
     System.out.println("Sending data");
     out.writeChar('l');
@@ -52,11 +76,10 @@ class SocketsManager {
   }
 
 
-  public void sendLoginResponse(Boolean b, String msg) throws IOException {
+  public void sendLoginResponse(Boolean b) throws IOException {
     System.out.println("Sending data");
     out.writeChar('z');
     out.writeBoolean(b);
-    out.writeUTF(msg);
     out.flush();
   }
 
