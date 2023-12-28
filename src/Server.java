@@ -87,47 +87,47 @@ public class Server {
     }
 
     public void run() {
-      // try {
+      try {
 
-        // logica do servidor 
-            // while(!sManager.isClosed()) {// le socket
+        logica do servidor 
+            while(!sManager.isClosed()) {// le socket
               
-            //   Message message = sManager.getMessage();
+              Message message = sManager.getMessage();
 
-            //   // Logica de diferenciar a mensagem
-            //   if (message.getType() == tryLogging ) {
+              // Logica de diferenciar a mensagem
+              if (message.getType() == tryLogging ) {
                 
-            //   } else if (message.getType() == registo ) {
+              } else if (message.getType() == registo ) {
                 
-            //   }else{
-            //     System.err.println("Mensagem não reconhecida");
-            //   }
+              }else{
+                System.err.println("Mensagem não reconhecida");
+              }
 
-            // }
+            }
             
-        // }
+        }
       
       
       
-      // } catch (IOException e) {} finally {
-      //   try {
-      //     this.sManager.close();
-      //   } catch (Exception e) {
-      //     e.printStackTrace();
-      //   }
-      // }
-    // }
+      } catch (IOException e) {} finally {
+        try {
+          this.sManager.close();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
 
-  //   public Boolean tryLogin() throws IOException {
-  //     Boolean result = false;
+    public Boolean tryLogin() throws IOException {
+      Boolean result = false;
 
-  //     String username = sManager.getMessage();
-  //     String password = sManager.getMessage();
+      String username = sManager.getMessage();
+      String password = sManager.getMessage();
 
-  //     result = login(username, password);
+      result = login(username, password);
 
-  //     return result;
-  //   }
+      return result;
+    }
   }
 }
 
