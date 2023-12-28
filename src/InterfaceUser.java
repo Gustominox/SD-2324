@@ -8,7 +8,7 @@ import java.io.*;
 
 public class InterfaceUser{
 
-    
+    Client c = new Client();
 
     public static void main(String[],args){
         Scanner scanner = new Scanner(System.in);
@@ -47,8 +47,8 @@ public class InterfaceUser{
                 String username = scanner.nextLine();
                 System.out.println("Introduza Password: \n");
                 String password = scanner.nextLine();
-                if (server.login(username,password)) System.out.println("Login feito com sucesso, Bem-Vindo " + username + "!\n");
-                else System.out.println("Login sem sucesso, username e password não correspondem\n");
+                client.login
+                
     }
 
     public void menuRegist(){
@@ -57,12 +57,36 @@ public class InterfaceUser{
                 String username = scanner.nextLine();
                 System.out.println("Introduza Password: \n");
                 String password = scanner.nextLine();
-                if (server.regist(username,password)) System.out.println("Registo feito com sucesso, Bem-Vindo " + username + "!\n");
-                else System.out.println("Registo sem sucesso\n");
+                
     }
 
+    public void sucesso(){
+        Scanner scanner = new Scanner(System.in);
+        while (true){
+            System.out.println("--  MAIN MENU:  --");
+            System.out.println("1. Pedir Execução de Um Trabalho\n");
+            System.out.println("2. Consulta do Estado do Servidor\n");
+            System.out.println("3. Exit\n");
+            System.out.println("Escolha a sua opção: ");
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
+            switch(opcao){
+                case 1:
+                    pedido
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    System.out.println("Obrigado, Volte Sempre!");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Escolha Inválida. Introduza opção novamente: ");
+            }
 
-    public byte[][] buscarTarefas(String filePath) {
+    }
+
+    public byte[] buscarTarefas(String filePath) {
         List<byte[]> result = new ArrayList<>();
         try (DataInputStream input = new DataInputStream(new FileInputStream(filePath))){
             String linha;
@@ -72,7 +96,7 @@ public class InterfaceUser{
                 result.add(tercampo);
             }
         }
-        return result.toArray(new byte[0][]);
+        return result.toArray(new byte[0]);
     }
 
     //recebe resultado em bytes --> criar ficheiro com resultados
@@ -87,4 +111,5 @@ public class InterfaceUser{
     }
 
 
+}
 }
