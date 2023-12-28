@@ -77,8 +77,8 @@ class Client {
 
   public static void main(String[] args) throws IOException {
     Client c = new Client();
-    // c.pedido("ola", 15, new byte[15]);
-    c.registo("UserName", "Password");
+    c.pedido("ola", 15, new byte[15]);
+    // c.registo("UserName", "Password");
     // c.login("UserName", "Password");
   }
 }
