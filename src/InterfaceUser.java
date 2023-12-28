@@ -21,6 +21,11 @@ public class InterfaceUser{
 
         switch(opcao){
             case 1:
+                System.out.println("Introduza Username: \n");
+                String username = scanner.nextLine();
+                System.out.println("Introduza Password: \n");
+
+
                 login();
             case 2:
                 regist();
