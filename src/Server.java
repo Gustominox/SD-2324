@@ -89,7 +89,7 @@ public class Server {
     public void run() {
       try {
 
-        logica do servidor 
+        // logica do servidor 
             while(!sManager.isClosed()) {// le socket
               
               Message message = sManager.getMessage();
@@ -110,11 +110,13 @@ public class Server {
       
       
       } catch (IOException e) {} finally {
+        
         try {
           this.sManager.close();
         } catch (Exception e) {
           e.printStackTrace();
         }
+        
       }
     }
 
