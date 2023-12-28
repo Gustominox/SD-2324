@@ -24,6 +24,7 @@ public class InterfaceUser{
                 System.out.println("Introduza Username: \n");
                 String username = scanner.nextLine();
                 System.out.println("Introduza Password: \n");
+                String username = scanner.nextLine();
 
 
                 login();
