@@ -67,6 +67,7 @@ public class Server {
         //verifica se o user ja nao esta online
         if (user.get(username).getStatus().equals(false)) {
           result = true;
+          // user.get(username).setStatus(true);
         } else System.out.println("o user já está ativo");
       } else System.out.println("password errada\n");
     } else System.out.println("o user nao existe\n");
@@ -89,15 +90,25 @@ public class Server {
     public void run() {
       try {
 
-        // logica do servidor 
+        
             while(!sManager.isClosed()) {// le socket
               
-              Message message = sManager.getMessage();
+              char type = sManager.readChar();
 
               // Logica de diferenciar a mensagem
-              if (message.getType() == tryLogging ) {
+
+              if (type == 'L' ) {
+
+                String username = sManager.readString();
+                String password = sManager.readString();
                 
-              } else if (message.getType() == registo ) {
+                Boolean r = login(username, password);
+              
+                sManager.sendLoginResponse(r);
+                
+
+
+              } else if (type == 'g' ) {
                 
               }else{
                 System.err.println("Mensagem não reconhecida");
@@ -116,20 +127,11 @@ public class Server {
         } catch (Exception e) {
           e.printStackTrace();
         }
-        
+
       }
     }
 
-    public Boolean tryLogin() throws IOException {
-      Boolean result = false;
-
-      String username = sManager.getMessage();
-      String password = sManager.getMessage();
-
-      result = login(username, password);
-
-      return result;
-    }
+    
   }
 }
 
