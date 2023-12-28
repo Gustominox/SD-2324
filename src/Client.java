@@ -10,6 +10,7 @@ class Client {
   private static volatile boolean running = true;
   private Socket socket; // = new Socket("Legion", 9090);
   private SocketsManager sManager;
+  private String ServerStatus;
   private Interface i = new Interface();
 
   public Client() throws IOException {
@@ -26,28 +27,36 @@ class Client {
    *
    * @throws IOException
    */
+  public void start() throws IOException {
+    Thread receiveThread = new Thread(() -> receive(sManager));
+    receiveThread.start();
 
-  public void pedido(String task, int tam, byte[] code) throws IOException{
+  }
+
+
+  public Boolean login(String username, String password) throws IOException {
+    sManager.sendLogin(username, password);
+    return sManager.recLogin();
+  }
+
+  public Boolean registo(String username, String password) throws IOException {
+    sManager.sendRegist(username, password);
+    return sManager.recRegist();
+  }
+ 
+  public void pedido(String task, int tam, byte[] code) throws IOException {
     sManager.sendPedido(task, tam, code);
   }
 
-  public void login() throws IOException {
-    String username = i.readline();
-    System.out.println("Sending username");
-    sManager.send(username);
-    System.out.println("Wating for response");
-
-    i.print(sManager.recv(12));
-    
-
-    String password = i.readline();
-    sManager.send(password);
-    i.print(sManager.recv(12));
-
-
-
-
+  public void consulta() throws IOException {
+    sManager.sendConsulta();
   }
+
+  public void quit() throws IOException {
+    sManager.sendQuit();
+  }
+
+
 
 
   public static void main(String[] args) throws IOException {

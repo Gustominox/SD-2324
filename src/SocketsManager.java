@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import javax.print.FlavorException;
+
 /*
  flags:
     login = l;
@@ -74,6 +76,16 @@ class SocketsManager {
     out.flush();
   }
 
+  public Boolean recLogin() throws IOException {
+    Boolean result = false;
+    char flag = in.readChar();
+    if (flag=='z'){
+      result = in.readBoolean();
+    }
+    return result;
+  }
+
+
   public void sendRegist(String user, String password) throws IOException {
     System.out.println("Sending data");
     out.writeChar('r');
@@ -82,13 +94,22 @@ class SocketsManager {
     out.flush();
   }
 
-  public void sendRegistResponse(Boolean b, String msg) throws IOException {
+  public void sendRegistResponse(Boolean b) throws IOException {
     System.out.println("Sending data");
     out.writeChar('y');
     out.writeBoolean(b);
-    out.writeUTF(msg);
     out.flush();
   }
+
+  public Boolean recRegist() throws IOException {
+    Boolean result = false;
+    char flag = in.readChar();
+    if (flag=='y'){
+      result = in.readBoolean();
+    }
+    return result;
+  }
+
 
   //verficar
   public void sendPedido(String task, int tam, byte[] code) throws IOException {
@@ -109,6 +130,7 @@ class SocketsManager {
     out.flush();
   }
 
+
   public void sendConsulta() throws IOException {
     System.out.println("Sending data");
     out.writeChar('c');
@@ -122,6 +144,8 @@ class SocketsManager {
     out.flush();
   }
 
+
+  
   public void sendQuit() throws IOException {
     System.out.println("Sending data");
     out.writeChar('q');
