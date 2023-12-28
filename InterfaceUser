@@ -8,8 +8,6 @@ import java.io.*;
 public class InterfaceUser{
 
 
-   //recebe ficheiro tarefa;espaço;o que é para fazer --> retorna bytes do que é para fazer
-
     public byte[][] buscarTarefas(String filePath) {
         List<byte[]> result = new ArrayList<>();
         try (DataInputStream input = new DataInputStream(new FileInputStream(filePath))){
