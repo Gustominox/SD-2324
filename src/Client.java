@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.concurrent.locks.Condition;
 
 class Client {
   
@@ -54,6 +55,18 @@ class Client {
 
   public void quit() throws IOException {
     sManager.sendQuit();
+  }
+
+
+  public void receive() throws IOException{
+    char type = sManager.readChar();
+    if (type == 'x') { //resposta dum pedido
+
+    }
+    else if (type == 'w') { //resposta duma consulta
+      
+
+    }
   }
 
 
