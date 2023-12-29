@@ -108,7 +108,6 @@ class SocketsManager {
     return result;
   }
 
-  //verficar
   public void sendPedido(String task, int tam, byte[] code) throws IOException {
     System.out.println("Sending data");
     out.writeChar('p');
@@ -120,24 +119,23 @@ class SocketsManager {
 
   public void sendPedidoResponse(Task task) throws IOException {
     System.out.println("Sending data");
-    String taskname = task.getName();
+    String taskName = task.getName();
     String message = task.getMessage();
     out.writeChar('x');
-    if (message == "unknown"){
+    if (message == "unknown") {
       out.writeChar('S');
-      out.writeUTF(taskname);
+      out.writeUTF(taskName);
       byte[] output = task.getOutput();
       out.writeInt(output.length);
       out.write(output);
-    }
-    else {
+    } else {
       out.writeChar('I');
-      out.writeUTF(taskname);
+      out.writeUTF(taskName);
       int code = task.getCode();
       out.writeInt(code);
       out.writeUTF(message);
     }
-    
+
     out.flush();
   }
 
@@ -155,7 +153,7 @@ class SocketsManager {
   }
 
   public void sendQuit() throws IOException {
-    System.out.println("Sending data");
+    System.out.println("Sending quit message");
     out.writeChar('q');
     out.flush();
   }

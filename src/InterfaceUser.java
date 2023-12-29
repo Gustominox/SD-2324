@@ -85,13 +85,13 @@ public class InterfaceUser {
           break;
         case 3:
           print("Terminar Aplicação!");
-          c.close();
           terminado = true;
           break;
         default:
           print("Escolha Inválida. Introduza opção novamente: ");
       }
     }
+    c.close();
   }
 
   public String buildPrincipal() {

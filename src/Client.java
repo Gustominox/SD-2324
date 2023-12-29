@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,9 +66,11 @@ class Client {
   public void start() throws IOException {
     receiveThread =
       new Thread(() -> {
-        while (true) {
+        while (!sManager.isClosed()) {
           try {
             receive(sManager);
+          } catch (SocketException e) {
+            System.out.println("Socket Closed, client stopped listening");
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -161,8 +164,7 @@ class Client {
 
       mapLock.writeLock().lock();
       if (type2 == 'S') {
-        int length = sManager.readInt();
-        byte output[] = sManager.readBytes(length);
+        byte output[] = sManager.readBytes(type);
         try (FileOutputStream fos = new FileOutputStream(taskName)) {
           // Write the byte array to the file
           fos.write(output);

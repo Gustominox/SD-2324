@@ -26,6 +26,7 @@ public class ThreadPool {
     try {
       for (Task task : completedTasks) {
         if (task.getUsername() == username) {
+          completedTasks.remove(task);
           return task;
         }
       }

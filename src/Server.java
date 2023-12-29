@@ -142,6 +142,9 @@ public class Server {
                 System.out.println("Received Consulta msg");
                 String estado = threadPool.getEstado();
                 sManager.sendConsultaResponse(estado);
+              } else if (type == 'q') {
+                System.out.println("Received quit msg");
+                // TODO: mudar estado do user no map
               } else { // pedido de processamento
                 System.err.println("Mensagem não reconhecida");
               }
