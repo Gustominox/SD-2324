@@ -100,44 +100,51 @@ public class Server {
 
     public void run() {
       try {
+        String username = null;
+
         while (!sManager.isClosed()) {
-          if (sManager.available() > 0) { // le socket
-            char type = sManager.readChar();
+          Task taskComp = threadPool.getCompTask(username);
+          if (taskComp != null) {
+            sManager.sendPedidoResponse(taskComp);
+          } else {
+            if (sManager.available() > 0) { // le socket
+              char type = sManager.readChar();
 
-            // Logica de diferenciar a mensagem
-            System.out.println("LI: " + type);
-            if (type == 'l') { // tentativa de logging
-              System.out.println("Received logging msg");
+              // Logica de diferenciar a mensagem
+              System.out.println("LI: " + type);
+              if (type == 'l') { // tentativa de logging
+                System.out.println("Received logging msg");
 
-              String username = sManager.readString();
-              String password = sManager.readString();
+                username = sManager.readString();
+                String password = sManager.readString();
 
-              Boolean r = login(username, password);
+                Boolean r = login(username, password);
 
-              sManager.sendLoginResponse(r);
-            } else if (type == 'p') { // pedido de processamento
-              System.out.println("Received process msg");
+                sManager.sendLoginResponse(r);
+              } else if (type == 'p') { // pedido de processamento
+                System.out.println("Received process msg");
 
-              String nome = sManager.readString();
-              int tmh = sManager.readInt();
-              byte code[] = sManager.readBytes(tmh);
+                String nome = sManager.readString();
+                int tmh = sManager.readInt();
+                byte code[] = sManager.readBytes(tmh);
 
-              Task task = new Task(nome, tmh, 0, code);
+                Task task = new Task(nome, username, tmh, 0, code);
 
-              // Submit uma task na thread pool
-              threadPool.submitTask(task);
-            } else if (type == 'r') {
-              System.out.println("Received Regist msg");
-              String username = sManager.readString();
-              String password = sManager.readString();
-              Boolean r = regist(username, password);
-              sManager.sendRegistResponse(r);
-            } else if (type == 'c') {
-              System.out.println("Received Consulta msg");
-              String estado = threadPool.getEstado();
-              sManager.sendConsultaResponse(estado);
-            } else { // pedido de processamento
-              System.err.println("Mensagem não reconhecida");
+                // Submit uma task na thread pool
+                threadPool.submitTask(task);
+              } else if (type == 'r') {
+                System.out.println("Received Regist msg");
+                username = sManager.readString();
+                String password = sManager.readString();
+                Boolean r = regist(username, password);
+                sManager.sendRegistResponse(r);
+              } else if (type == 'c') {
+                System.out.println("Received Consulta msg");
+                String estado = threadPool.getEstado();
+                sManager.sendConsultaResponse(estado);
+              } else { // pedido de processamento
+                System.err.println("Mensagem não reconhecida");
+              }
             }
           }
         }
