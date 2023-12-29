@@ -11,6 +11,14 @@ public class TaskQueue {
   private final int totalMemory;
   private int currentMemory = 0;
 
+  public int getCurrentMemory() {
+    return currentMemory;
+  }
+
+  public void setCurrentMemory(int currentMemory) {
+    this.currentMemory = currentMemory;
+  }
+
   private Queue<Task> taskQueue;
 
   ReentrantLock lock = new ReentrantLock();
