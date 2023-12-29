@@ -20,6 +20,10 @@ server:
 pool: 
 	java -cp out:sd23.jar ThreadPool
 
+.PHONY: run
+run: 
+	java -cp sd23.jar:out InterfaceUser
+
 .PHONY: clean
 clean:
 	@rm -r out
