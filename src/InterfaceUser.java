@@ -25,8 +25,22 @@ public class InterfaceUser {
     return menu1.toString();
   }
 
+  /**
+   * Método que apresenta no ecrã uma mensagem para informar o utilzador que deve fazer press Enter
+   */
+  public void pressEnter() {
+    System.out.println("Press Enter to Continue");
+  }
+
+  /**
+   * Método que limpa o ecrã
+   */
+  public void clearScreen() {
+    System.out.println("\033[H\033[2J");
+  }
+
   public void print(String input) {
-    System.out.println(input);
+    System.out.print(input);
   }
 
   public void menuInicial() throws IOException {
@@ -34,6 +48,7 @@ public class InterfaceUser {
 
     while (!terminado) {
       String menu = buildMenu1();
+      clearScreen();
       print(menu);
 
       int opcao = scanner.nextInt();
@@ -42,29 +57,31 @@ public class InterfaceUser {
       String password;
       switch (opcao) {
         case 1:
+          clearScreen();
           print("--LOGIN--\n");
-          print("Introduza Username: \n");
+          print("Introduza Username: ");
           username = scanner.nextLine();
 
-          print("Introduza Password: \n");
+          print("Introduza Password: ");
           password = scanner.nextLine();
 
           if (c.login(username, password)) {
-            menuPrincipal();
+            terminado = menuPrincipal();
           } else {
             print("Credencias não correspondem, tente novamente!\n");
           }
           break;
         case 2:
+          clearScreen();
           print("--REGISTER--\n");
-          print("Introduza Username: \n");
+          print("Introduza Username: ");
           username = scanner.nextLine();
 
-          print("Introduza Password: \n");
+          print("Introduza Password: ");
           password = scanner.nextLine();
 
           if (c.registo(username, password)) {
-            menuPrincipal();
+            terminado = menuPrincipal();
           } else {
             print("Registo sem Sucesso, tente novamente!\n");
           }
@@ -81,7 +98,7 @@ public class InterfaceUser {
 
   public String buildPrincipal() {
     StringBuilder menu2 = new StringBuilder();
-    menu2.append("--  MAIN MENU:  --");
+    menu2.append("--  MAIN MENU:  --\n");
     menu2.append("1. Pedir Execução de Um Trabalho\n");
     menu2.append("2. Consulta de Resultados\n");
     menu2.append("3. Guardar Resultados num Ficheiro\n");
@@ -91,11 +108,12 @@ public class InterfaceUser {
     return menu2.toString();
   }
 
-  public void menuPrincipal() {
+  public Boolean menuPrincipal() {
     Scanner scanner = new Scanner(System.in);
     boolean terminado = false;
     while (!terminado) {
       String menu = buildPrincipal();
+      clearScreen();
       print(menu);
 
       int opcao = scanner.nextInt();
@@ -122,7 +140,10 @@ public class InterfaceUser {
           break;
         case 2:
           String output = c.consultarMap();
+          print("RESULTADOS: \n");
           print(output);
+          pressEnter();
+          scanner.nextLine();
 
           break;
         case 3:
@@ -147,13 +168,14 @@ public class InterfaceUser {
 
           break;
         case 5:
-          print("Terminar Aplicação!");
+          print("Terminar Aplicação!!\n");
           terminado = true;
           break;
         default:
           print("Escolha Inválida. Introduza opção novamente: ");
       }
     }
+    return terminado;
   }
 
   /*  public byte[] buscarTarefas(String filePath) {
