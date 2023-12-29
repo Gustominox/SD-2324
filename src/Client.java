@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -138,10 +140,16 @@ class Client {
     if (type == 'x') { //resposta dum pedido
       char type2 = sManager.readChar();
       String taskName = sManager.readString();
+
       mapLock.writeLock().lock();
       if (type2 == 'S') {
         byte output[] = sManager.readBytes(type);
-
+        try (FileOutputStream fos = new FileOutputStream(taskName)) {
+            // Write the byte array to the file
+            fos.write(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         tasksMap.put(
           taskName,
           "Recebido com Sucesso, tmh: " + output.length + " bytes"
@@ -154,6 +162,13 @@ class Client {
           taskName,
           "Recebido sem Sucesso, code: " + code + ", msg: " + msg
         );
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(taskName))) {
+          // Write the content to the file
+          writer.write("Recebido sem Sucesso, code: " + code + ", msg: " + msg);
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
       }
       mapLock.writeLock().unlock();
     } else if (type == 'w') { //resposta duma consulta
