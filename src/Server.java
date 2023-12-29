@@ -77,8 +77,10 @@ public class Server {
       if (userMap.get(username).getPassword().equals(password)) {
         //verifica se o user ja nao esta online
         if (userMap.get(username).getStatus().equals(false)) {
-          userMap.get(username).setStatus(true);
           mapLock.readLock().unlock();
+          mapLock.writeLock().lock();
+          userMap.get(username).setStatus(true);
+          mapLock.readLock().unlock();;
           result = true;
         } else {
           mapLock.readLock().unlock();
