@@ -161,7 +161,8 @@ class Client {
 
       mapLock.writeLock().lock();
       if (type2 == 'S') {
-        byte output[] = sManager.readBytes(type);
+        int length = sManager.readInt();
+        byte output[] = sManager.readBytes(length);
         try (FileOutputStream fos = new FileOutputStream(taskName)) {
           // Write the byte array to the file
           fos.write(output);

@@ -120,10 +120,24 @@ class SocketsManager {
 
   public void sendPedidoResponse(Task task) throws IOException {
     System.out.println("Sending data");
+    String taskname = task.getName();
+    String message = task.getMessage();
     out.writeChar('x');
-    out.writeUTF(task);
-    out.writeInt(output.length);
-    out.write(output);
+    if (message == "unknown"){
+      out.writeChar('S');
+      out.writeUTF(taskname);
+      byte[] output = task.getOutput();
+      out.writeInt(output.length);
+      out.write(output);
+    }
+    else {
+      out.writeChar('I');
+      out.writeUTF(taskname);
+      int code = task.getCode();
+      out.writeInt(code);
+      out.writeUTF(message);
+    }
+    
     out.flush();
   }
 
