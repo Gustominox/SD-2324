@@ -27,8 +27,12 @@ class Client {
    */
   private final Map<String, String> tasksMap;
 
-  public Client() throws IOException {
-    socket = new Socket("localhost", 9090);
+  public Client() {
+    try {
+      socket = new Socket("localhost", 9090);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     sManager = new SocketsManager(socket);
     tasksMap = new HashMap<String, String>();
 
