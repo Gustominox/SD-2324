@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.sound.sampled.AudioFormat.Encoding;
 
 class Client {
 
@@ -76,6 +79,24 @@ class Client {
 
   public void quit() throws IOException {
     sManager.sendQuit();
+  }
+
+  public void excecutePedido (String input) throws IOException{
+    String [] task = input.split(";");
+    String taskname;
+    byte[] code;
+    int size;
+
+    if(task.length != 2){
+      System.out.println("o input nao esta no formato correto");
+    }
+    else {
+      taskname = task[0];
+      code = task[1].getBytes(StandardCharsets.UTF_8);
+      size = code.length;
+
+      pedido(taskname, size, code);
+    }
   }
 
   public void receive(SocketsManager sManager) throws IOException {
