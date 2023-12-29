@@ -34,12 +34,10 @@ public class InterfaceUser{
                 case 2:
                     menuRegist();
                     break;
-
                 case 3:
                     System.out.println("Obrigado, Volte Sempre!");
                     System.exit(0);
                     break;
-
                 default:
                     System.out.println("Escolha Inválida. Introduza opção novamente: ");
             }
@@ -61,7 +59,7 @@ public class InterfaceUser{
 
     public static void menuRegist() throws IOException{
         Scanner scanner = new Scanner(System.in);
-        StringBuilder registMenu = new StringBuilder()
+        StringBuilder registMenu = new StringBuilder();
         registMenu.append("--REGISTER--\n");
         registMenu.append("Introduza Username: \n");
         String username = scanner.nextLine();
@@ -88,11 +86,21 @@ public class InterfaceUser{
             scanner.nextLine();
             switch(opcao){
                 case 1:
-                    pedido
+                    
+                    c.pedido(task,tam,code);
                     break;
                 case 2:
+
+                    
                     break;
                 case 3:
+                    System.out.println("Resultados gravados!\n");
+                    break;
+                case 4:
+                    c.consulta();
+                    System.out.println();
+                    break;
+                case 5:
                     System.out.println("Obrigado, Volte Sempre!");
                     System.exit(0);
                     break;
