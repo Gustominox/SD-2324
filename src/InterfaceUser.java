@@ -88,6 +88,7 @@ public class InterfaceUser {
           break;
         case 3:
           print("Terminar Aplicação!");
+          //   c.close();
           terminado = true;
           break;
         default:
@@ -111,6 +112,12 @@ public class InterfaceUser {
   public Boolean menuPrincipal() {
     Scanner scanner = new Scanner(System.in);
     boolean terminado = false;
+
+    try {
+      c.start();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     while (!terminado) {
       String menu = buildPrincipal();
       clearScreen();
@@ -165,6 +172,9 @@ public class InterfaceUser {
           break;
         case 4:
           c.consultaServidor();
+          print(c.getServerStatus());
+          pressEnter();
+          scanner.nextLine();
 
           break;
         case 5:

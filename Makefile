@@ -10,7 +10,7 @@ build:
 
 .PHONY: client
 client: 
-	java -cp sd23.jar:out Client
+	java -cp sd23.jar:out InterfaceUser
 
 .PHONY: server
 server: 

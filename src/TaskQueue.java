@@ -18,7 +18,6 @@ public class TaskQueue {
   Condition memUpdated;
 
   public TaskQueue(int totalMemory) {
-
     this.totalMemory = totalMemory;
     this.taskQueue = new PriorityQueue<>();
 
@@ -48,6 +47,15 @@ public class TaskQueue {
     }
   }
 
+  public String getState() {
+    StringBuilder estado = new StringBuilder();
+
+    for (Task task : taskQueue) {
+      estado.append(task.getName()).append("\n");
+    }
+    return estado.toString();
+  }
+
   public Task getTask() throws InterruptedException {
     lock.lock();
     try {
@@ -63,7 +71,7 @@ public class TaskQueue {
 
       if (nextTask.getPriority() >= 5) {
         // System.out.println("Checking " + nextTask.getName()
-              // + "and Checking " + nextTask.getName() );
+        // + "and Checking " + nextTask.getName() );
         while (
           (nextTask.getName() == currentTask.getName()) && // se a task ja saiu do topo da queue
           (this.currentMemory + nextTask.getMemory()) > this.totalMemory // se ela ainda esta no topo da queue e ja ha memoria para executar

@@ -45,13 +45,40 @@ public class ThreadPool {
     }
   }
 
+  public String getEstado() {
+    StringBuilder estado = new StringBuilder();
+
+    // Print the state of the task queue
+    estado.append("Task Queue State:\n");
+    estado.append(taskQueue.getState());
+    estado.append("\n");
+
+    // Print the state of each worker thread
+    estado.append("Worker Threads State:\n");
+    for (int i = 0; i < workers.length; i++) {
+      estado.append("Thread ").append(i).append(": ");
+      if (workers[i].currentTask != null) {
+        estado
+          .append("Task ")
+          .append(workers[i].currentTask.getName())
+          .append(" is being processed\n");
+      } else {
+        estado.append("Idle\n");
+      }
+    }
+    return estado.toString();
+  }
+
   private class WorkerThread extends Thread {
+
+    Task currentTask = null;
 
     @Override
     public void run() {
       try {
         while (true) {
           Task task = taskQueue.getTask();
+          currentTask = task;
           if (task != null) {
             task.run();
             // task.output
@@ -59,6 +86,7 @@ public class ThreadPool {
             // insere na lista de resposta (Completed tasks)
             try {
               lCompTasks.lock();
+              currentTask = null;
               completedTasks.addLast(task);
             } finally {
               lCompTasks.unlock();
