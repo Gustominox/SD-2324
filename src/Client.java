@@ -17,6 +17,7 @@ class Client {
   private Socket socket; // = new Socket("Legion", 9090);
   private SocketsManager sManager;
   private String serverStatus;
+  Thread receiveThread;
 
   public String getServerStatus() {
     return serverStatus;
@@ -62,16 +63,38 @@ class Client {
    * @throws IOException
    */
   public void start() throws IOException {
-    Thread receiveThread = new Thread(() -> {
-      while (true) {
-        try {
-          receive(sManager);
-        } catch (IOException e) {
-          e.printStackTrace();
+    receiveThread =
+      new Thread(() -> {
+        while (true) {
+          try {
+            receive(sManager);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
         }
-      }
-    });
+      });
     receiveThread.start();
+  }
+
+  /**
+   * Closes the client gracefully.
+   */
+  public void close() {
+    try {
+      // Send a quit message to the server before closing the socket
+      quit();
+
+      // Close the socket
+      if (socket != null && !socket.isClosed()) {
+        socket.close();
+      }
+
+      if (receiveThread != null && receiveThread.isAlive()) {
+        receiveThread.interrupt();
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public Boolean login(String username, String password) throws IOException {
