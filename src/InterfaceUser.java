@@ -85,7 +85,7 @@ public class InterfaceUser {
           break;
         case 3:
           print("Terminar Aplicação!");
-          //   c.close();
+          c.close();
           terminado = true;
           break;
         default:
@@ -183,31 +183,6 @@ public class InterfaceUser {
     }
     return terminado;
   }
-
-  /*  public byte[] buscarTarefas(String filePath) {
-        List<byte[]> result = new ArrayList<>();
-        try (DataInputStream input = new DataInputStream(new FileInputStream(filePath))){
-            String linha;
-            while (linha = input.readLine() != null){
-                String[] campo = linha.split(";");
-                byte[] tercampo = campo[2].getBytes();
-                result.add(tercampo);
-            }
-        }
-        return result.toArray(new byte[0]);
-    }
-
-    //recebe resultado em bytes --> criar ficheiro com resultados
-
-    public void escreverResultadosTarefa(byte[][] resBytes, String filePath){
-        try (DataOutputStream output = new DataOutputStream(new FileOutputStream(filePath))){
-            for (byte[] linha : resBytes){
-                output.write(linha);
-                output.write('\n');
-            }
-        }
-    }
-*/
 
   public static void main(String[] args) throws IOException {
     InterfaceUser i = new InterfaceUser();
