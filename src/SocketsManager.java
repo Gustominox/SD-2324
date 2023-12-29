@@ -118,8 +118,7 @@ class SocketsManager {
     out.flush();
   }
 
-  public void sendPedidoResponse(String task, byte output[])
-    throws IOException {
+  public void sendPedidoResponse(Task task) throws IOException {
     System.out.println("Sending data");
     out.writeChar('x');
     out.writeUTF(task);
