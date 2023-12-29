@@ -1,7 +1,4 @@
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class InterfaceUser {
@@ -110,7 +107,6 @@ public class InterfaceUser {
   }
 
   public Boolean menuPrincipal() {
-    Scanner scanner = new Scanner(System.in);
     boolean terminado = false;
 
     try {
