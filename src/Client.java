@@ -1,15 +1,11 @@
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -18,7 +14,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class Client {
 
-  private static volatile boolean running = true;
   private Socket socket; // = new Socket("Legion", 9090);
   private SocketsManager sManager;
   private String serverStatus;
@@ -145,16 +140,15 @@ class Client {
       if (type2 == 'S') {
         byte output[] = sManager.readBytes(type);
         try (FileOutputStream fos = new FileOutputStream(taskName)) {
-            // Write the byte array to the file
-            fos.write(output);
+          // Write the byte array to the file
+          fos.write(output);
         } catch (IOException e) {
-            e.printStackTrace();
+          e.printStackTrace();
         }
         tasksMap.put(
           taskName,
           "Recebido com Sucesso, tmh: " + output.length + " bytes"
         );
-        // TODO: write output to file taskName.txt
       } else if (type2 == 'I') {
         int code = sManager.readInt();
         String msg = sManager.readString();
@@ -163,12 +157,14 @@ class Client {
           "Recebido sem Sucesso, code: " + code + ", msg: " + msg
         );
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(taskName))) {
+        try (
+          BufferedWriter writer = new BufferedWriter(new FileWriter(taskName))
+        ) {
           // Write the content to the file
           writer.write("Recebido sem Sucesso, code: " + code + ", msg: " + msg);
-      } catch (IOException e) {
+        } catch (IOException e) {
           e.printStackTrace();
-      }
+        }
       }
       mapLock.writeLock().unlock();
     } else if (type == 'w') { //resposta duma consulta
