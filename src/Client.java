@@ -28,6 +28,8 @@ class Client {
     serverStatus = sStatus;
   }
 
+  private String username;
+
   private Lock statusLock = new ReentrantLock();
   private Condition serverStatusUpdate = statusLock.newCondition();
 
@@ -102,11 +104,13 @@ class Client {
 
   public Boolean login(String username, String password) throws IOException {
     sManager.sendLogin(username, password);
+    this.username = username;
     return sManager.recLogin();
   }
 
   public Boolean registo(String username, String password) throws IOException {
     sManager.sendRegist(username, password);
+    this.username = username;
     return sManager.recRegist();
   }
 
@@ -123,7 +127,7 @@ class Client {
   }
 
   public void quit() throws IOException {
-    sManager.sendQuit();
+    sManager.sendQuit(username);
   }
 
   public String consultarMap() {
