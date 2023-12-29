@@ -128,10 +128,12 @@ public class InterfaceUser {
         case 3:
           print("Insira o nome do ficheiro onde guardar os resultados: ");
           String filePath2 = scanner.nextLine();
-          String outputMap = c.consulta();
+          String outputMap = c.consultarMap();
 
           try (
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))
+            BufferedWriter writer = new BufferedWriter(
+              new FileWriter(filePath2)
+            )
           ) {
             writer.write(outputMap);
           } catch (IOException e) {
@@ -141,7 +143,7 @@ public class InterfaceUser {
           print("Resultados gravados!\n");
           break;
         case 4:
-          c.consulta();
+          c.consultaServidor();
 
           break;
         case 5:
