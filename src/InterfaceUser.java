@@ -1,9 +1,7 @@
 import java.io.*;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class InterfaceUser {
@@ -106,11 +104,40 @@ public class InterfaceUser {
 
       switch (opcao) {
         case 1:
-          c.pedido(task, tam, code);
+          print("Insira o ficheiro de Tasks a processar: ");
+          String filePath = scanner.nextLine();
+
+          try (
+            BufferedReader reader = new BufferedReader(new FileReader(filePath))
+          ) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+              // Process the line as needed
+              c.executePedido(line);
+            }
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+
           break;
         case 2:
+          String output = c.consultarMap();
+          print(output);
+
           break;
         case 3:
+          print("Insira o nome do ficheiro onde guardar os resultados: ");
+          String filePath2 = scanner.nextLine();
+          String outputMap = c.consulta();
+
+          try (
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))
+          ) {
+            writer.write(outputMap);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+
           print("Resultados gravados!\n");
           break;
         case 4:
@@ -119,7 +146,6 @@ public class InterfaceUser {
           break;
         case 5:
           print("Terminar Aplicação!");
-
           terminado = true;
           break;
         default:
