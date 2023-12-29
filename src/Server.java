@@ -77,20 +77,20 @@ public class Server {
       if (userMap.get(username).getPassword().equals(password)) {
         //verifica se o user ja nao esta online
         if (userMap.get(username).getStatus().equals(false)) {
-          result = true;
           userMap.get(username).setStatus(true);
           mapLock.readLock().unlock();
+          result = true;
         } else {
-          System.out.println("o user já está ativo");
           mapLock.readLock().unlock();
+          System.out.println("o user já está ativo");
         }
       } else {
-        System.out.println("password errada\n");
         mapLock.readLock().unlock();
+        System.out.println("password errada\n");
       }
     } else {
-      System.out.println("o user nao existe\n");
       mapLock.readLock().unlock();
+      System.out.println("o user nao existe\n");
     }
 
     
