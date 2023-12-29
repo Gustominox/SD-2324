@@ -80,7 +80,7 @@ public class Server {
           mapLock.readLock().unlock();
           mapLock.writeLock().lock();
           userMap.get(username).setStatus(true);
-          mapLock.readLock().unlock();;
+          mapLock.writeLock().unlock();
           result = true;
         } else {
           mapLock.readLock().unlock();
@@ -95,18 +95,13 @@ public class Server {
       System.out.println("o user nao existe\n");
     }
 
-    
     return result;
   }
 
-  public void quitServer(String username) throws IOException{
-    
+  public void quitServer(String username) throws IOException {
     mapLock.writeLock().lock();
     userMap.get(username).setStatus(false);
     mapLock.writeLock().unlock();
-
-  }
-
   }
 
   private class ClientHandler implements Runnable {
