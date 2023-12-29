@@ -20,6 +20,18 @@ public class Task implements Runnable, Comparable<Task> {
     return username;
   }
 
+  public String getMessage(){
+    return message;
+  }
+
+
+  public int getCode(){
+    return code;
+  }
+  public byte[] getOutput(){
+    return output;
+  }
+
   public void setUsername(String username) {
     this.username = username;
   }
