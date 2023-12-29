@@ -158,41 +158,47 @@ class Client {
 
   public void receive(SocketsManager sManager) throws IOException {
     char type = sManager.readChar();
+    System.out.println("Received msg type " + type);
     if (type == 'x') { //resposta dum pedido
       char type2 = sManager.readChar();
       String taskName = sManager.readString();
 
       mapLock.writeLock().lock();
-      if (type2 == 'S') {
-        byte output[] = sManager.readBytes(type);
-        try (FileOutputStream fos = new FileOutputStream(taskName)) {
-          // Write the byte array to the file
-          fos.write(output);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        tasksMap.put(
-          taskName,
-          "Recebido com Sucesso, tmh: " + output.length + " bytes"
-        );
-      } else if (type2 == 'I') {
-        int code = sManager.readInt();
-        String msg = sManager.readString();
-        tasksMap.put(
-          taskName,
-          "Recebido sem Sucesso, code: " + code + ", msg: " + msg
-        );
+      try {
+        if (type2 == 'S') {
+          byte output[] = sManager.readBytes(type);
+          try (FileOutputStream fos = new FileOutputStream(taskName)) {
+            // Write the byte array to the file
+            fos.write(output);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          tasksMap.put(
+            taskName,
+            "Recebido com Sucesso, tmh: " + output.length + " bytes"
+          );
+        } else if (type2 == 'I') {
+          int code = sManager.readInt();
+          String msg = sManager.readString();
+          tasksMap.put(
+            taskName,
+            "Recebido sem Sucesso, code: " + code + ", msg: " + msg
+          );
 
-        try (
-          BufferedWriter writer = new BufferedWriter(new FileWriter(taskName))
-        ) {
-          // Write the content to the file
-          writer.write("Recebido sem Sucesso, code: " + code + ", msg: " + msg);
-        } catch (IOException e) {
-          e.printStackTrace();
+          try (
+            BufferedWriter writer = new BufferedWriter(new FileWriter(taskName))
+          ) {
+            // Write the content to the file
+            writer.write(
+              "Recebido sem Sucesso, code: " + code + ", msg: " + msg
+            );
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
         }
+      } finally {
+        mapLock.writeLock().unlock();
       }
-      mapLock.writeLock().unlock();
     } else if (type == 'w') { //resposta duma consulta
       System.out.println("Resposta duma consulta");
       statusLock.lock();
@@ -216,7 +222,7 @@ class Client {
     this.statusLock.lock();
     try {
       sManager.sendConsulta();
-      System.out.println("wating for response");
+      System.out.println("waiting for response");
       serverStatusUpdate.await();
     } catch (Exception e) {
       e.printStackTrace();
