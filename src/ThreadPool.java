@@ -75,6 +75,10 @@ public class ThreadPool {
         estado.append("Idle\n");
       }
     }
+    estado.append(
+      "Memory in use: " + taskQueue.getCurrentMemory() + "Bytes.\n"
+    );
+
     return estado.toString();
   }
 
