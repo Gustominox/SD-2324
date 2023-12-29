@@ -52,9 +52,9 @@ public class Server {
     mapLock.readLock().lock();
     //verificar se o username ja existe
     if (userMap.containsKey(username)) {
+      mapLock.readLock().unlock();
       System.out.println("o username ja existe\n");
       result = false;
-      mapLock.readLock().unlock();
     }
     //senao existir criar
     else {
@@ -79,11 +79,21 @@ public class Server {
         if (userMap.get(username).getStatus().equals(false)) {
           result = true;
           userMap.get(username).setStatus(true);
-        } else System.out.println("o user já está ativo");
-      } else System.out.println("password errada\n");
-    } else System.out.println("o user nao existe\n");
+          mapLock.readLock().unlock();
+        } else {
+          System.out.println("o user já está ativo");
+          mapLock.readLock().unlock();
+        }
+      } else {
+        System.out.println("password errada\n");
+        mapLock.readLock().unlock();
+      }
+    } else {
+      System.out.println("o user nao existe\n");
+      mapLock.readLock().unlock();
+    }
 
-    mapLock.readLock().unlock();
+    
     return result;
   }
 
