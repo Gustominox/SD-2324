@@ -78,13 +78,23 @@ public class Server {
         //verifica se o user ja nao esta online
         if (userMap.get(username).getStatus().equals(false)) {
           result = true;
-          // userMap.get(username).setStatus(true);
+          userMap.get(username).setStatus(true);
         } else System.out.println("o user já está ativo");
       } else System.out.println("password errada\n");
     } else System.out.println("o user nao existe\n");
 
     mapLock.readLock().unlock();
     return result;
+  }
+
+  public void quitServer(String username) throws IOException{
+    
+    mapLock.writeLock().lock();
+    userMap.get(username).setStatus(false);
+    mapLock.writeLock().unlock();
+
+  }
+
   }
 
   private class ClientHandler implements Runnable {
@@ -144,7 +154,7 @@ public class Server {
                 sManager.sendConsultaResponse(estado);
               } else if (type == 'q') {
                 System.out.println("Received quit msg");
-                // TODO: mudar estado do user no map
+                quitServer(username);
               } else { // pedido de processamento
                 System.err.println("Mensagem não reconhecida");
               }
