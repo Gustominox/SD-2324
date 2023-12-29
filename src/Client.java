@@ -3,6 +3,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -18,7 +19,16 @@ class Client {
   private static volatile boolean running = true;
   private Socket socket; // = new Socket("Legion", 9090);
   private SocketsManager sManager;
-  private String ServerStatus;
+  private String serverStatus;
+
+  public String getServerStatus() {
+    return serverStatus;
+  }
+
+  public void setServerStatus(String sStatus) {
+    serverStatus = sStatus;
+  }
+
   private Lock statusLock = new ReentrantLock();
   private Condition serverStatusUpdate = statusLock.newCondition();
 
@@ -34,9 +44,13 @@ class Client {
   public Client() {
     try {
       socket = new Socket("localhost", 9090);
+    } catch (ConnectException e) {
+      e.printStackTrace();
+      System.err.println("\nERROR IN CLIENT, check if server is open...\n");
     } catch (IOException e) {
       e.printStackTrace();
     }
+    serverStatus = "No Status asked yet!!";
     sManager = new SocketsManager(socket);
     tasksMap = new HashMap<String, String>();
     mapLock = new ReentrantReadWriteLock();
@@ -52,10 +66,12 @@ class Client {
    */
   public void start() throws IOException {
     Thread receiveThread = new Thread(() -> {
-      try {
-        receive(sManager);
-      } catch (IOException e) {
-        e.printStackTrace();
+      while (true) {
+        try {
+          receive(sManager);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     });
     receiveThread.start();
@@ -141,8 +157,14 @@ class Client {
       }
       mapLock.writeLock().unlock();
     } else if (type == 'w') { //resposta duma consulta
-      this.ServerStatus = sManager.readString();
-      serverStatusUpdate.signal();
+      System.out.println("Resposta duma consulta");
+      statusLock.lock();
+      this.serverStatus = sManager.readString();
+      try {
+        serverStatusUpdate.signal();
+      } finally {
+        statusLock.unlock();
+      }
     }
   }
 
@@ -157,6 +179,7 @@ class Client {
     this.statusLock.lock();
     try {
       sManager.sendConsulta();
+      System.out.println("wating for response");
       serverStatusUpdate.await();
     } catch (Exception e) {
       e.printStackTrace();

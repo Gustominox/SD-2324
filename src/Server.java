@@ -132,6 +132,10 @@ public class Server {
               String password = sManager.readString();
               Boolean r = regist(username, password);
               sManager.sendRegistResponse(r);
+            } else if (type == 'c') {
+              System.out.println("Received Consulta msg");
+              String estado = threadPool.getEstado();
+              sManager.sendConsultaResponse(estado);
             } else { // pedido de processamento
               System.err.println("Mensagem não reconhecida");
             }
