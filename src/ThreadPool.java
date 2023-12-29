@@ -19,12 +19,20 @@ public class ThreadPool {
     }
   }
 
-  public Task getCompTask() {
-    Task front = null;
-    if (!completedTasks.isEmpty()) {
-      front = completedTasks.removeFirst();
+  public Task getCompTask(String username) {
+    if (username == null) return null;
+
+    this.lCompTasks.lock();
+    try {
+      for (Task task : completedTasks) {
+        if (task.getUsername() == username) {
+          return task;
+        }
+      }
+      return null;
+    } finally {
+      this.lCompTasks.unlock();
     }
-    return front;
   }
 
   public void start() {
