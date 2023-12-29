@@ -8,19 +8,25 @@ import java.io.*;
 
 public class InterfaceUser{
 
-    Client c = new Client();
+    static Client c = new Client();
 
-    public static void main(String[],args){
+    public static void main(String[] args) throws IOException{
+        menu1();
+    }
+
+
+    public static void menu1() throws IOException{
         Scanner scanner = new Scanner(System.in);
-        while (true){
-            System.out.println("--  LOGIN MENU:  --");
-            System.out.println("1. Login\n");
-            System.out.println("2. Register\n");
-            System.out.println("3. Exit\n");
-            System.out.println("Escolha a sua opção: ");
+        while (true) {
+            StringBuilder menu1 = new StringBuilder();
+            menu1.append("--  LOGIN MENU:  --\n");
+            menu1.append("1. Login\n");
+            menu1.append("2. Register\n");
+            menu1.append("3. Exit\n");
+            menu1.append("Escolha a sua opção: ");
+            System.out.println(menu1.toString());
             int opcao = scanner.nextInt();
             scanner.nextLine();
-
             switch(opcao){
                 case 1:
                     menuLogin();
@@ -40,33 +46,44 @@ public class InterfaceUser{
         }
     }
 
-    public void menuLogin(){
-        System.out.println("--LOGIN--\n");
-                System.out.println("Introduza Username: \n");
-                String username = scanner.nextLine();
-                System.out.println("Introduza Password: \n");
-                String password = scanner.nextLine();
-                client.login
-
+    public static void menuLogin() throws IOException{
+        Scanner scanner = new Scanner(System.in);
+        StringBuilder loginMenu = new StringBuilder();
+        loginMenu.append("--LOGIN--\n");
+        loginMenu.append("Introduza Username: \n");
+        String username = scanner.nextLine();
+        loginMenu.append("Introduza Password: \n");
+        String password = scanner.nextLine();
+        if (c.login(username, password)) menu2();
+        else System.out.println("Credencias não correspondem, tente novamente!\n");
     }
 
-    public void menuRegist(){
-            System.out.println("--REGISTER--\n");
-                System.out.println("Introduza Username: \n");
-                String username = scanner.nextLine();
-                System.out.println("Introduza Password: \n");
-                String password = scanner.nextLine();
 
+    public static void menuRegist() throws IOException{
+        Scanner scanner = new Scanner(System.in);
+        StringBuilder registMenu = new StringBuilder()
+        registMenu.append("--REGISTER--\n");
+        registMenu.append("Introduza Username: \n");
+        String username = scanner.nextLine();
+        registMenu.append("Introduza Password: \n");
+        String password = scanner.nextLine();
+        if (c.registo(username, password)) menu2();
+        else System.out.println("Registo sem Sucesso, tente novamente!\n");
     }
 
-    public void sucesso(){
+
+
+    public static void menu2(){
         Scanner scanner = new Scanner(System.in);
         while (true){
-            System.out.println("--  MAIN MENU:  --");
-            System.out.println("1. Pedir Execução de Um Trabalho\n");
-            System.out.println("2. Consulta do Estado do Servidor\n");
-            System.out.println("3. Exit\n");
-            System.out.println("Escolha a sua opção: ");
+            StringBuilder menu2 = new StringBuilder();
+            menu2.append("--  MAIN MENU:  --");
+            menu2.append("1. Pedir Execução de Um Trabalho\n");
+            menu2.append("2. Consulta de Resultados\n");
+            menu2.append("3. Guardar Resultados num Ficheiro\n");
+            menu2.append("4. Consulta do Estado do Servidor\n");
+            menu2.append("5. Exit\n");
+            menu2.append("Escolha a sua opção: ");
             int opcao = scanner.nextInt();
             scanner.nextLine();
             switch(opcao){
@@ -83,9 +100,10 @@ public class InterfaceUser{
                     System.out.println("Escolha Inválida. Introduza opção novamente: ");
             }
 
+        }
     }
 
-    public byte[] buscarTarefas(String filePath) {
+   /*  public byte[] buscarTarefas(String filePath) {
         List<byte[]> result = new ArrayList<>();
         try (DataInputStream input = new DataInputStream(new FileInputStream(filePath))){
             String linha;
@@ -108,6 +126,6 @@ public class InterfaceUser{
             }
         }
     }
+*/
+}
 
-}
-}
