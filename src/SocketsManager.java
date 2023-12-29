@@ -152,9 +152,10 @@ class SocketsManager {
     out.flush();
   }
 
-  public void sendQuit() throws IOException {
+  public void sendQuit(String username) throws IOException {
     System.out.println("Sending quit message");
     out.writeChar('q');
+    out.writeUTF(username);
     out.flush();
   }
 
