@@ -6,12 +6,12 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import javax.sound.sampled.AudioFormat.Encoding;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class Client {
 
@@ -29,6 +29,7 @@ class Client {
    * }
    */
   private final Map<String, String> tasksMap;
+  private final ReentrantReadWriteLock mapLock;
 
   public Client() {
     try {
@@ -38,6 +39,7 @@ class Client {
     }
     sManager = new SocketsManager(socket);
     tasksMap = new HashMap<String, String>();
+    mapLock = new ReentrantReadWriteLock();
 
     System.out.println(socket.getPort());
   }
@@ -70,6 +72,10 @@ class Client {
   }
 
   public void pedido(String task, int tam, byte[] code) throws IOException {
+    mapLock.writeLock().lock();
+    tasksMap.put(task, "A espera de resposta...");
+    mapLock.writeLock().unlock();
+
     sManager.sendPedido(task, tam, code);
   }
 
@@ -81,21 +87,33 @@ class Client {
     sManager.sendQuit();
   }
 
-  public void excecutePedido (String input) throws IOException{
-    String [] task = input.split(";");
-    String taskname;
-    byte[] code;
+  public String consultarMap() {
+    Map<String, String> map = this.tasksMap;
+    StringBuilder sb = new StringBuilder();
+    // Entry<TaskName , TaskStatus>
+    this.mapLock.readLock().lock();
+    for (Map.Entry<String, String> entry : map.entrySet()) {
+      sb.append("  Task: " + entry.getKey()).append(", Status: ");
+      sb.append(entry.getValue()).append("\n");
+    }
+    this.mapLock.readLock().unlock();
+    return sb.toString();
+  }
+
+  public void executePedido(String input) throws IOException {
+    String task[] = input.split(";");
+    String taskName;
+    byte code[];
     int size;
 
-    if(task.length != 2){
+    if (task.length != 2) {
       System.out.println("o input nao esta no formato correto");
-    }
-    else {
-      taskname = task[0];
+    } else {
+      taskName = task[0];
       code = task[1].getBytes(StandardCharsets.UTF_8);
       size = code.length;
 
-      pedido(taskname, size, code);
+      this.pedido(taskName, size, code);
     }
   }
 
@@ -104,7 +122,7 @@ class Client {
     if (type == 'x') { //resposta dum pedido
       char type2 = sManager.readChar();
       String taskName = sManager.readString();
-
+      mapLock.writeLock().lock();
       if (type2 == 'S') {
         byte output[] = sManager.readBytes(type);
 
@@ -121,6 +139,7 @@ class Client {
           "Recebido sem Sucesso, code: " + code + ", msg: " + msg
         );
       }
+      mapLock.writeLock().unlock();
     } else if (type == 'w') { //resposta duma consulta
       this.ServerStatus = sManager.readString();
       serverStatusUpdate.signal();
@@ -132,5 +151,17 @@ class Client {
     c.pedido("ola", 15, new byte[15]);
     // c.registo("UserName", "Password");
     // c.login("UserName", "Password");
+  }
+
+  public void consultaServidor() {
+    this.statusLock.lock();
+    try {
+      sManager.sendConsulta();
+      serverStatusUpdate.await();
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      this.statusLock.unlock();
+    }
   }
 }
