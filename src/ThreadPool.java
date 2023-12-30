@@ -68,7 +68,6 @@ public class ThreadPool {
       estado.append("Thread ").append(i).append(": ");
       if (workers[i].currentTask != null) {
         estado
-          .append("Task ")
           .append(workers[i].currentTask.getName())
           .append(" is being processed\n");
       } else {
@@ -76,7 +75,7 @@ public class ThreadPool {
       }
     }
     estado.append(
-      "Memory in use: " + taskQueue.getCurrentMemory() + "Bytes.\n"
+      "Memory in use: " + taskQueue.getCurrentMemory() + " Bytes.\n"
     );
 
     return estado.toString();
