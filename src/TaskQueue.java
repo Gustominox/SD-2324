@@ -141,46 +141,5 @@ public class TaskQueue {
     }
   }
 
-  public static void main(String[] args) {
-    TaskQueue taskQueue = new TaskQueue(600);
-
-    // Example of adding tasks to the queue
-    // taskQueue.addTask(new Task("Task 1", 200, 0, new byte[1000]));
-    // taskQueue.addTask(new Task("Task 2", 200, 0, new byte[1000]));
-    // taskQueue.addTask(new Task("Task 3", 200, 0, new byte[1000]));
-    // taskQueue.addTask(new Task("Task 4", 200, 0, new byte[1000]));
-    // taskQueue.addTask(new Task("Task 5", 200, 0, new byte[1000]));
-    // taskQueue.addTask(new Task("Task 9", 200, 5, new byte[1000]));
-
-    // taskQueue.addTask(new Task("Task 6", 200, 0, new byte[1000]));
-    // taskQueue.addTask(new Task("Task 7", 200, 5, new byte[1000]));
-    // taskQueue.addTask(new Task("Task 8", 200, 5, new byte[1000]));
-    // taskQueue.addTask(new Task("Task 10", 200, 0, new byte[1000]));
-
-    // taskQueue.addTask(new Task("Task 10", 200, 0, new byte[1000]));
-
-    // Example of processing tasks from the queue in a separate thread
-
-    for (int i = 0; i < 3; i++) {
-      Thread poolThread = new Thread(() -> {
-        try {
-          while (true) {
-            Task task = taskQueue.getTask();
-
-            if (task != null) {
-              task.run();
-
-              taskQueue.reduceMemory(task.getMemory());
-            }
-          }
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          System.out.println("INTERROMPIDA!!");
-        }
-      });
-      poolThread.start();
-    }
-  }
-
   public void shutdown() {}
 }
