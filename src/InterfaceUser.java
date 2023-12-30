@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class InterfaceUser {
@@ -47,8 +48,13 @@ public class InterfaceUser {
       String menu = buildMenu1();
       clearScreen();
       print(menu);
+      int opcao;
+      try {
+        opcao = scanner.nextInt();
+      } catch (InputMismatchException e) {
+        opcao = -1;
+      }
 
-      int opcao = scanner.nextInt();
       scanner.nextLine();
       String username;
       String password;
@@ -63,9 +69,17 @@ public class InterfaceUser {
           password = scanner.nextLine();
 
           if (c.login(username, password)) {
+            print("Login efetuado com sucesso!!\n\n");
+            pressEnter();
+            scanner.nextLine();
+
             terminado = menuPrincipal();
           } else {
-            print("Credencias não correspondem, tente novamente!\n");
+            print(
+              "Credencias incorretas ou utilizador já em uso, Tente novamente!\n\n"
+            );
+            pressEnter();
+            scanner.nextLine();
           }
           break;
         case 2:
@@ -78,17 +92,25 @@ public class InterfaceUser {
           password = scanner.nextLine();
 
           if (c.registo(username, password)) {
+            print("Registo efetuado com sucesso!!\n\n");
+            pressEnter();
+            scanner.nextLine();
+
             terminado = menuPrincipal();
           } else {
-            print("Registo sem Sucesso, tente novamente!\n");
+            print("Registo sem Sucesso, tente novamente!\n\n");
+            pressEnter();
+            scanner.nextLine();
           }
+
           break;
         case 3:
-          print("Terminar Aplicação!");
+          print("Terminar Aplicação!\n");
           terminado = true;
           break;
         default:
-          print("Escolha Inválida. Introduza opção novamente: ");
+          print("Escolha Inválida. Introduza opção novamente! ");
+          scanner.nextLine();
       }
     }
     c.close();
@@ -118,8 +140,12 @@ public class InterfaceUser {
       String menu = buildPrincipal();
       clearScreen();
       print(menu);
-
-      int opcao = scanner.nextInt();
+      int opcao;
+      try {
+        opcao = scanner.nextInt();
+      } catch (InputMismatchException e) {
+        opcao = -1;
+      }
 
       scanner.nextLine();
 
@@ -136,6 +162,10 @@ public class InterfaceUser {
               // Process the line as needed
               c.executePedido(line);
             }
+          } catch (FileNotFoundException eFile) {
+            System.out.println("\nFicheiro introduzido não existe!!\n");
+            pressEnter();
+            scanner.nextLine();
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -143,6 +173,7 @@ public class InterfaceUser {
           break;
         case 2:
           String output = c.consultarMap();
+          clearScreen();
           print("RESULTADOS: \n");
           print(output);
           pressEnter();
@@ -160,14 +191,19 @@ public class InterfaceUser {
             )
           ) {
             writer.write(outputMap);
+          } catch (FileNotFoundException eFile) {
+            System.out.println("\nFicheiro introduzido não existe!!\n");
+            pressEnter();
+            scanner.nextLine();
           } catch (IOException e) {
             e.printStackTrace();
           }
 
-          print("Resultados gravados!\n");
+          print("Resultados gravados no ficheiro " + filePath2 + "!!\n");
           break;
         case 4:
           c.consultaServidor();
+          clearScreen();
           print(c.getServerStatus());
           pressEnter();
           scanner.nextLine();
@@ -178,7 +214,8 @@ public class InterfaceUser {
           terminado = true;
           break;
         default:
-          print("Escolha Inválida. Introduza opção novamente: ");
+          print("Escolha Inválida. Introduza opção novamente! ");
+          scanner.nextLine();
       }
     }
     return terminado;
