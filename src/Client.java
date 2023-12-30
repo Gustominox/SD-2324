@@ -150,7 +150,7 @@ class Client {
     int size;
 
     if (task.length != 2) {
-      System.out.println("o input nao esta no formato correto");
+      System.out.println("O input não está no formato correto");
     } else {
       taskName = task[0];
       code = task[1].getBytes(StandardCharsets.UTF_8);
@@ -162,7 +162,7 @@ class Client {
 
   public void receive(SocketsManager sManager) throws IOException {
     char type = sManager.readChar();
-    System.out.println("Received msg type " + type);
+    //System.out.println("Received msg type " + type);
     if (type == 'x') { //resposta dum pedido
       char type2 = sManager.readChar();
       String taskName = sManager.readString();
@@ -205,7 +205,7 @@ class Client {
         mapLock.writeLock().unlock();
       }
     } else if (type == 'w') { //resposta duma consulta
-      System.out.println("Resposta duma consulta");
+      //System.out.println("Resposta duma consulta");
       statusLock.lock();
       this.serverStatus = sManager.readString();
       try {
@@ -227,7 +227,7 @@ class Client {
     this.statusLock.lock();
     try {
       sManager.sendConsulta();
-      System.out.println("waiting for response");
+      //System.out.println("waiting for response");
       serverStatusUpdate.await();
     } catch (Exception e) {
       e.printStackTrace();

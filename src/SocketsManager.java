@@ -61,7 +61,7 @@ class SocketsManager {
   }
 
   public void sendLogin(String user, String password) throws IOException {
-    System.out.println("Sending data");
+    //System.out.println("Sending data");
     out.writeChar('l');
     out.writeUTF(user);
     out.writeUTF(password);
@@ -69,7 +69,7 @@ class SocketsManager {
   }
 
   public void sendLoginResponse(Boolean b) throws IOException {
-    System.out.println("Sending data");
+    //System.out.println("Sending data");
     out.writeChar('z');
     out.writeBoolean(b);
     out.flush();
@@ -85,7 +85,7 @@ class SocketsManager {
   }
 
   public void sendRegist(String user, String password) throws IOException {
-    System.out.println("Sending data");
+    //System.out.println("Sending data");
     out.writeChar('r');
     out.writeUTF(user);
     out.writeUTF(password);
@@ -93,7 +93,7 @@ class SocketsManager {
   }
 
   public void sendRegistResponse(Boolean b) throws IOException {
-    System.out.println("Sending data");
+    //System.out.println("Sending data");
     out.writeChar('y');
     out.writeBoolean(b);
     out.flush();
@@ -109,7 +109,7 @@ class SocketsManager {
   }
 
   public void sendPedido(String task, int tam, byte[] code) throws IOException {
-    System.out.println("Sending data");
+    //System.out.println("Sending data");
     out.writeChar('p');
     out.writeUTF(task);
     out.writeInt(tam);
@@ -118,7 +118,7 @@ class SocketsManager {
   }
 
   public void sendPedidoResponse(Task task) throws IOException {
-    System.out.println("Sending data");
+    //System.out.println("Sending data");
     String taskName = task.getName();
     String message = task.getMessage();
     out.writeChar('x');
@@ -140,20 +140,20 @@ class SocketsManager {
   }
 
   public void sendConsulta() throws IOException {
-    System.out.println("Sending data");
+    //System.out.println("Sending data");
     out.writeChar('c');
     out.flush();
   }
 
   public void sendConsultaResponse(String estado) throws IOException {
-    System.out.println("Sending data");
+    //System.out.println("Sending data");
     out.writeChar('w');
     out.writeUTF(estado);
     out.flush();
   }
 
   public void sendQuit(String username) throws IOException {
-    System.out.println("Sending quit message");
+    //System.out.println("Sending quit message");
     out.writeChar('q');
     out.writeUTF(username);
     out.flush();

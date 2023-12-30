@@ -128,9 +128,9 @@ public class Server {
               char type = sManager.readChar();
 
               // Logica de diferenciar a mensagem
-              System.out.println("LI: " + type);
+              //System.out.println("LI: " + type);
               if (type == 'l') { // tentativa de logging
-                System.out.println("Received logging msg");
+                //System.out.println("Received logging msg");
 
                 username = sManager.readString();
                 String password = sManager.readString();
@@ -139,7 +139,7 @@ public class Server {
 
                 sManager.sendLoginResponse(r);
               } else if (type == 'p') { // pedido de processamento
-                System.out.println("Received process msg");
+                //System.out.println("Received process msg");
 
                 String nome = sManager.readString();
                 int tmh = sManager.readInt();
@@ -150,17 +150,17 @@ public class Server {
                 // Submit uma task na thread pool
                 threadPool.submitTask(task);
               } else if (type == 'r') {
-                System.out.println("Received Regist msg");
+                //System.out.println("Received Regist msg");
                 username = sManager.readString();
                 String password = sManager.readString();
                 Boolean r = regist(username, password);
                 sManager.sendRegistResponse(r);
               } else if (type == 'c') {
-                System.out.println("Received Consulta msg");
+                //System.out.println("Received Consulta msg");
                 String estado = threadPool.getEstado();
                 sManager.sendConsultaResponse(estado);
               } else if (type == 'q') {
-                System.out.println("Received quit msg");
+                //System.out.println("Received quit msg");
                 quitServer(username);
               } else { // pedido de processamento
                 System.err.println("Mensagem não reconhecida");
