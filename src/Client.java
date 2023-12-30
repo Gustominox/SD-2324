@@ -56,8 +56,6 @@ class Client {
     sManager = new SocketsManager(socket);
     tasksMap = new HashMap<String, String>();
     mapLock = new ReentrantReadWriteLock();
-
-    System.out.println(socket.getPort());
   }
 
   /**
@@ -221,13 +219,6 @@ class Client {
     } catch (EOFException e) {
       System.err.println("EOF na Socket, Server fechado!!\n");
     }
-  }
-
-  public static void main(String[] args) throws IOException {
-    Client c = new Client();
-    c.pedido("ola", 15, new byte[15]);
-    // c.registo("UserName", "Password");
-    // c.login("UserName", "Password");
   }
 
   public void consultaServidor() {
