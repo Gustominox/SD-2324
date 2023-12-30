@@ -21,15 +21,15 @@ public class TaskQueue {
 
   private Queue<Task> taskQueue;
 
-  ReentrantLock lock = new ReentrantLock();
+  ReentrantLock lock;
   Condition notEmpty;
   Condition memUpdated;
 
   public TaskQueue(int totalMemory) {
     this.totalMemory = totalMemory;
-    this.taskQueue = new PriorityQueue<>();
+    this.taskQueue = new PriorityQueue<Task>();
 
-    // this.lock = new ReentrantLock();
+    this.lock = new ReentrantLock();
     this.notEmpty = lock.newCondition();
     this.memUpdated = lock.newCondition();
   }
