@@ -94,6 +94,12 @@ public class TaskQueue {
 
       nextTask = taskQueue.poll();
 
+      if (nextTask.getMemory() > this.totalMemory) {
+        nextTask.setMessage("Memory Overflow!!");
+
+        return nextTask;
+      }
+
       // List to store tasks that don't fit into available memory
       List<Task> tasksToRemove = new ArrayList<>();
 

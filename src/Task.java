@@ -20,20 +20,24 @@ public class Task implements Runnable, Comparable<Task> {
     return username;
   }
 
-  public String getMessage(){
+  public String getMessage() {
     return message;
   }
 
-
-  public int getCode(){
+  public int getCode() {
     return code;
   }
-  public byte[] getOutput(){
+
+  public byte[] getOutput() {
     return output;
   }
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public void setMessage(String msg) {
+    this.message = msg;
   }
 
   public String getName() {
