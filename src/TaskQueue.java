@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TaskQueue {
@@ -78,8 +77,6 @@ public class TaskQueue {
       Task currentTask = taskQueue.peek();
 
       if (nextTask.getPriority() >= 5) {
-        // System.out.println("Checking " + nextTask.getName()
-        // + "and Checking " + nextTask.getName() );
         while (
           (nextTask.getName() == currentTask.getName()) && // se a task ja saiu do topo da queue
           (this.currentMemory + nextTask.getMemory()) > this.totalMemory // se ela ainda esta no topo da queue e ja ha memoria para executar
@@ -93,8 +90,6 @@ public class TaskQueue {
           memUpdated.await();
           currentTask = taskQueue.peek();
         }
-        // nextTask.setPriority(4); // try to
-        // return null;
       }
 
       nextTask = taskQueue.poll();
@@ -107,9 +102,7 @@ public class TaskQueue {
         (this.currentMemory + nextTask.getMemory()) > this.totalMemory // encontrou uma que da para executar
       ) {
         // The task doesn't fit into available memory, add it to the list for later addition
-
         tasksToRemove.add(nextTask);
-
         // Check the next task in the queue
         nextTask = taskQueue.poll();
       }
@@ -118,7 +111,7 @@ public class TaskQueue {
       if (
         nextTask != null
       ) for (Task task : tasksToRemove) task.increasePriority();
-
+      // Add the removed tasks back to the queue
       taskQueue.addAll(tasksToRemove);
 
       if (nextTask != null) {
@@ -132,8 +125,6 @@ public class TaskQueue {
         );
         memUpdated.await(); // Wait until a task is available
       }
-
-      // Add the removed tasks back to the queue
 
       return nextTask;
     } finally {
