@@ -1,4 +1,5 @@
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -161,58 +162,64 @@ class Client {
   }
 
   public void receive(SocketsManager sManager) throws IOException {
-    char type = sManager.readChar();
-    //System.out.println("Received msg type " + type);
-    if (type == 'x') { //resposta dum pedido
-      char type2 = sManager.readChar();
-      String taskName = sManager.readString();
+    try {
+      char type = sManager.readChar();
+      //System.out.println("Received msg type " + type);
+      if (type == 'x') { //resposta dum pedido
+        char type2 = sManager.readChar();
+        String taskName = sManager.readString();
 
-      mapLock.writeLock().lock();
-      try {
-        if (type2 == 'S') {
-          int length = sManager.readInt();
-          byte output[] = sManager.readBytes(length);
-          try (FileOutputStream fos = new FileOutputStream(taskName)) {
-            // Write the byte array to the file
-            fos.write(output);
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-          tasksMap.put(
-            taskName,
-            "Recebido com Sucesso, tmh: " + output.length + " bytes"
-          );
-        } else if (type2 == 'I') {
-          int code = sManager.readInt();
-          String msg = sManager.readString();
-          tasksMap.put(
-            taskName,
-            "Recebido sem Sucesso, code: " + code + ", msg: " + msg
-          );
-
-          try (
-            BufferedWriter writer = new BufferedWriter(new FileWriter(taskName))
-          ) {
-            // Write the content to the file
-            writer.write(
+        mapLock.writeLock().lock();
+        try {
+          if (type2 == 'S') {
+            int length = sManager.readInt();
+            byte output[] = sManager.readBytes(length);
+            try (FileOutputStream fos = new FileOutputStream(taskName)) {
+              // Write the byte array to the file
+              fos.write(output);
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+            tasksMap.put(
+              taskName,
+              "Recebido com Sucesso, tmh: " + output.length + " bytes"
+            );
+          } else if (type2 == 'I') {
+            int code = sManager.readInt();
+            String msg = sManager.readString();
+            tasksMap.put(
+              taskName,
               "Recebido sem Sucesso, code: " + code + ", msg: " + msg
             );
-          } catch (IOException e) {
-            e.printStackTrace();
+
+            try (
+              BufferedWriter writer = new BufferedWriter(
+                new FileWriter(taskName)
+              )
+            ) {
+              // Write the content to the file
+              writer.write(
+                "Recebido sem Sucesso, code: " + code + ", msg: " + msg
+              );
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
           }
+        } finally {
+          mapLock.writeLock().unlock();
         }
-      } finally {
-        mapLock.writeLock().unlock();
+      } else if (type == 'w') { //resposta duma consulta
+        //System.out.println("Resposta duma consulta");
+        statusLock.lock();
+        this.serverStatus = sManager.readString();
+        try {
+          serverStatusUpdate.signal();
+        } finally {
+          statusLock.unlock();
+        }
       }
-    } else if (type == 'w') { //resposta duma consulta
-      //System.out.println("Resposta duma consulta");
-      statusLock.lock();
-      this.serverStatus = sManager.readString();
-      try {
-        serverStatusUpdate.signal();
-      } finally {
-        statusLock.unlock();
-      }
+    } catch (EOFException e) {
+      System.err.println("EOF na Socket, Server fechado!!\n");
     }
   }
 
