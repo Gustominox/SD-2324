@@ -28,7 +28,12 @@ public class Server {
 
     while (true) {
       Socket clientSoc = socket.accept();
-      System.out.println("Accepted connection" + clientSoc);
+      System.out.println(
+        "Accepted connection on address " +
+        clientSoc.getLocalAddress() +
+        " in port " +
+        clientSoc.getLocalPort()
+      );
 
       ClientHandler client = new ClientHandler(clientSoc);
 
@@ -54,7 +59,7 @@ public class Server {
     //verificar se o username ja existe
     if (userMap.containsKey(username)) {
       mapLock.readLock().unlock();
-      System.out.println("o username ja existe\n");
+      System.out.println("O username já existe!\n");
       result = false;
     }
     //senao existir criar
@@ -85,15 +90,15 @@ public class Server {
           result = true;
         } else {
           mapLock.readLock().unlock();
-          System.out.println("o user já está ativo");
+          System.out.println("O user já está autenticado!");
         }
       } else {
         mapLock.readLock().unlock();
-        System.out.println("password errada\n");
+        System.out.println("Password errada!\n");
       }
     } else {
       mapLock.readLock().unlock();
-      System.out.println("o user nao existe\n");
+      System.out.println("User não existe!\n");
     }
 
     return result;
