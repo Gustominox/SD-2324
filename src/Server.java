@@ -1,3 +1,4 @@
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,7 +28,7 @@ public class Server {
 
     while (true) {
       Socket clientSoc = socket.accept();
-      System.out.println("Accepted connection");
+      System.out.println("Accepted connection" + clientSoc);
 
       ClientHandler client = new ClientHandler(clientSoc);
 
@@ -111,7 +112,6 @@ public class Server {
 
     //constructor
     public ClientHandler(Socket socket) {
-      // this.client = socket;
       this.sManager = new SocketsManager(socket);
     }
 
@@ -125,45 +125,43 @@ public class Server {
             sManager.sendPedidoResponse(taskComp);
           } else {
             if (sManager.available() > 0) { // le socket
-              char type = sManager.readChar();
+              try {
+                char type = sManager.readChar();
 
-              // Logica de diferenciar a mensagem
-              //System.out.println("LI: " + type);
-              if (type == 'l') { // tentativa de logging
-                //System.out.println("Received logging msg");
+                // Logica de diferenciar a mensagem
+                if (type == 'l') { // tentativa de logging
+                  username = sManager.readString();
+                  String password = sManager.readString();
 
-                username = sManager.readString();
-                String password = sManager.readString();
+                  Boolean r = login(username, password);
 
-                Boolean r = login(username, password);
+                  sManager.sendLoginResponse(r);
+                } else if (type == 'p') { // pedido de processamento
+                  String nome = sManager.readString();
+                  int tmh = sManager.readInt();
+                  byte code[] = sManager.readBytes(tmh);
 
-                sManager.sendLoginResponse(r);
-              } else if (type == 'p') { // pedido de processamento
-                //System.out.println("Received process msg");
+                  Task task = new Task(nome, username, tmh, 0, code);
 
-                String nome = sManager.readString();
-                int tmh = sManager.readInt();
-                byte code[] = sManager.readBytes(tmh);
+                  // Submit uma task na thread pool
+                  threadPool.submitTask(task);
+                } else if (type == 'r') {
+                  username = sManager.readString();
 
-                Task task = new Task(nome, username, tmh, 0, code);
+                  String password = sManager.readString();
+                  Boolean r = regist(username, password);
 
-                // Submit uma task na thread pool
-                threadPool.submitTask(task);
-              } else if (type == 'r') {
-                //System.out.println("Received Regist msg");
-                username = sManager.readString();
-                String password = sManager.readString();
-                Boolean r = regist(username, password);
-                sManager.sendRegistResponse(r);
-              } else if (type == 'c') {
-                //System.out.println("Received Consulta msg");
-                String estado = threadPool.getEstado();
-                sManager.sendConsultaResponse(estado);
-              } else if (type == 'q') {
-                //System.out.println("Received quit msg");
-                quitServer(username);
-              } else { // pedido de processamento
-                System.err.println("Mensagem não reconhecida");
+                  sManager.sendRegistResponse(r);
+                } else if (type == 'c') {
+                  String estado = threadPool.getEstado();
+                  sManager.sendConsultaResponse(estado);
+                } else if (type == 'q') {
+                  quitServer(username);
+                } else { // pedido de processamento
+                  System.err.println("Mensagem não reconhecida");
+                }
+              } catch (EOFException e) {
+                System.err.println("EOF na Socket, cliente fechado!!\n");
               }
             }
           }
