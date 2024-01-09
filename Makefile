@@ -8,18 +8,19 @@ CLASS_FILES = ./*.class
 build: 
 	$(JAVAC) -cp sd23.jar -d out src/*.java
 
-.PHONY: client
+.PHONY: client # Run client
 client: 
 	java -cp sd23.jar:out InterfaceUser
 
-.PHONY: server
+.PHONY: server # Run server
 server: 
 	java -cp sd23.jar:out Server
 
-.PHONY: pool
-pool: 
-	java -cp out:sd23.jar ThreadPool
-
-.PHONY: clean
+.PHONY: clean # Clean java class files
 clean:
 	@rm -r out
+
+.PHONY: man, help # Generate list of targets with descriptions
+man help:
+	@echo -------------------------------------------------------------------+
+	@grep '^.PHONY: .* #' Makefile | sed 's/\.PHONY: \(.*\) # \(.*\)/    \1 \t: \2\n-------------------------------------------------------------------+/'
